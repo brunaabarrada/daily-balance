@@ -600,7 +600,8 @@
       humor: { mood: null, pensamento: '', reformulacao: '' },
       corrida: { km: null, min: null, conversa: null },
       notaDia: '',
-      treinoAlternativo: ''
+      treinoAlternativo: '',
+      treinoCustom: []
     };
   }
 
@@ -616,6 +617,7 @@
     if (!d.corrida) d.corrida = { km: null, min: null, conversa: null };
     if (typeof d.notaDia === 'undefined') d.notaDia = '';
     if (typeof d.treinoAlternativo === 'undefined') d.treinoAlternativo = '';
+    if (!d.treinoCustom) d.treinoCustom = [];
     return d;
   }
 
@@ -777,27 +779,53 @@
       if (st) html += `<div class="status-note ${st}">${STATUS_NOTE[st]}</div>`;
 
       const overrideKey = editable ? (dayData.treinoAlternativo || '') : '';
-      const activeTpl = (overrideKey && overrideKey !== d.key) ? TREINO_TEMPLATES.find(t => t.key === overrideKey) : d;
+      const isCustom = overrideKey === 'custom';
+      const activeTpl = (overrideKey && overrideKey !== d.key && !isCustom) ? TREINO_TEMPLATES.find(t => t.key === overrideKey) : d;
 
       if (editable) {
         html += `<select id="fTreinoAlt" style="margin:14px 0 2px;">
           <option value="">Fiz o treino previsto (${d.title})</option>
           ${TREINO_TEMPLATES.filter(t=>t.key!==d.key).map(t=>`<option value="${t.key}" ${overrideKey===t.key?'selected':''}>Adaptei — fiz ${t.title} (${t.label})</option>`).join('')}
+          <option value="custom" ${isCustom?'selected':''}>Outro treino (não previsto — personalizado)</option>
         </select>`;
       }
-      if (overrideKey && overrideKey !== d.key) {
+      if (overrideKey && overrideKey !== d.key && !isCustom) {
         html += `<p class="hint" style="margin:4px 0 12px;">Adaptado — o previsto pra hoje era ${d.title}, mas o que conta é o que você conseguiu fazer.</p>`;
       }
 
-      const essDone = editable ? activeTpl.essenciais.filter((ex,i)=> getExState(dayData,'e'+i).done).length : 0;
-      html += `<p class="group-label"><span>Essenciais</span>${editable ? `<span>${essDone}/${activeTpl.essenciais.length}</span>` : ''}</p>`;
-      html += exList(activeTpl.essenciais, 'e');
-      if (st !== 'amarelo' && st !== 'vermelho') {
-        const compDone = editable ? activeTpl.complementares.filter((ex,i)=> getExState(dayData,'c'+i).done).length : 0;
-        html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${activeTpl.complementares.length}</span>` : ''}</p>`;
-        html += exList(activeTpl.complementares, 'c');
+      if (isCustom) {
+        const items = dayData.treinoCustom || [];
+        const doneCount = items.filter(it=>it.done).length;
+        html += `<p class="hint" style="margin:4px 0 12px;">Monte a lista com o que você realmente treinou hoje — fora do seu planejamento fixo.</p>`;
+        html += `<p class="group-label"><span>Exercícios de hoje</span><span>${doneCount}/${items.length}</span></p>`;
+        html += `<ul class="ex-list">${items.map((it,i)=>`
+          <li style="flex-wrap:wrap;">
+            <span class="ex-name" style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
+              <input type="checkbox" class="custom-ex-chk" data-i="${i}" ${it.done?'checked':''}>
+              <span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; ${it.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${it.n}${it.s?' · '+it.s:''}</span>
+            </span>
+            <span style="display:flex; align-items:center; gap:8px;">
+              ${it.done ? `<input type="number" class="custom-ex-carga" data-i="${i}" value="${it.carga||''}" placeholder="kg" style="width:56px;">` : ''}
+              <button class="item-x custom-ex-x" data-i="${i}" title="remover">×</button>
+            </span>
+          </li>`).join('') || '<p class="hint" style="margin:0;">Nenhum exercício adicionado ainda.</p>'}
+        </ul>`;
+        html += `<div class="custom-add" style="margin-top:10px;">
+          <input type="text" class="iname" id="fCustomExNome" placeholder="nome do exercício">
+          <input type="text" class="ikcal" id="fCustomExSets" placeholder="ex: 3x12" style="width:80px;">
+          <button id="btnAddCustomEx">adicionar</button>
+        </div>`;
+      } else {
+        const essDone = editable ? activeTpl.essenciais.filter((ex,i)=> getExState(dayData,'e'+i).done).length : 0;
+        html += `<p class="group-label"><span>Essenciais</span>${editable ? `<span>${essDone}/${activeTpl.essenciais.length}</span>` : ''}</p>`;
+        html += exList(activeTpl.essenciais, 'e');
+        if (st !== 'amarelo' && st !== 'vermelho') {
+          const compDone = editable ? activeTpl.complementares.filter((ex,i)=> getExState(dayData,'c'+i).done).length : 0;
+          html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${activeTpl.complementares.length}</span>` : ''}</p>`;
+          html += exList(activeTpl.complementares, 'c');
+        }
+        if (activeTpl.cardio) html += `<div class="cardio-tag">🏃 ${activeTpl.cardio}</div>`;
       }
-      if (activeTpl.cardio) html += `<div class="cardio-tag">🏃 ${activeTpl.cardio}</div>`;
     }
 
     if (editable && d.type !== 'corrida') {
@@ -870,6 +898,41 @@
         const fTreinoAlt = document.getElementById('fTreinoAlt');
         if (fTreinoAlt) fTreinoAlt.onchange = async (e) => {
           dayData.treinoAlternativo = e.target.value;
+          await saveDay(dateForDay);
+          toast();
+          render();
+        };
+
+        contentEl.querySelectorAll('.custom-ex-chk').forEach(chk => {
+          chk.onchange = async (e) => {
+            dayData.treinoCustom[parseInt(chk.dataset.i)].done = e.target.checked;
+            await saveDay(dateForDay);
+            toast();
+            render();
+          };
+        });
+        contentEl.querySelectorAll('.custom-ex-carga').forEach(inp => {
+          inp.onchange = async (e) => {
+            dayData.treinoCustom[parseInt(inp.dataset.i)].carga = parseFloat(e.target.value) || null;
+            await saveDay(dateForDay);
+            toast();
+          };
+        });
+        contentEl.querySelectorAll('.custom-ex-x').forEach(btn => {
+          btn.onclick = async () => {
+            dayData.treinoCustom.splice(parseInt(btn.dataset.i), 1);
+            await saveDay(dateForDay);
+            toast();
+            render();
+          };
+        });
+        const btnAddCustomEx = document.getElementById('btnAddCustomEx');
+        if (btnAddCustomEx) btnAddCustomEx.onclick = async () => {
+          const nomeInput = document.getElementById('fCustomExNome');
+          const setsInput = document.getElementById('fCustomExSets');
+          const nome = nomeInput.value.trim();
+          if (!nome) return;
+          dayData.treinoCustom.push({ n: nome, s: setsInput.value.trim(), done: false, carga: null });
           await saveDay(dateForDay);
           toast();
           render();

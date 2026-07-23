@@ -249,6 +249,21 @@
   .custom-add input.iname{ flex: 1; min-width: 120px; }
   .custom-add input.ikcal{ width: 74px; }
   .custom-add button{ font-family: 'Inter'; font-size: 12.5px; font-weight:600; background: var(--teal); color:#fff; border:none; border-radius: 7px; padding: 6px 12px; cursor:pointer; }
+
+  .custom-add-v2{ display:flex; flex-direction:column; gap: 8px; }
+  .custom-add-v2 input.iname-full{
+    width:100%; box-sizing:border-box; font-family:'IBM Plex Mono', monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; background: var(--paper);
+  }
+  .custom-add-row{ display:flex; gap: 8px; }
+  .custom-add-row input.ikcal{
+    flex: 1; min-width: 0; font-family:'IBM Plex Mono', monospace; font-size: 12.5px;
+    border: 1px solid var(--line); border-radius: 7px; padding: 8px 8px; background: var(--paper); box-sizing:border-box;
+  }
+  .custom-add-row button{
+    font-family: 'Inter'; font-size: 12.5px; font-weight:600; background: var(--teal); color:#fff;
+    border:none; border-radius: 7px; padding: 8px 16px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
   .obs-field{ margin-top: 10px; }
   .obs-field input{ width:100%; font-family:'Inter'; border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; font-size: 13px; background: var(--paper); }
 
@@ -618,18 +633,34 @@
   const FOOD_DB = [
     {n:'Arroz cozido', u:'4 colh. sopa', k:130},
     {n:'Feijão cozido', u:'1 concha', k:90},
+    {n:'Lentilha cozida', u:'100g', k:93},
+    {n:'Grão de bico cozido', u:'100g', k:121},
     {n:'Frango grelhado', u:'100g', k:165},
     {n:'Carne bovina magra', u:'100g', k:200},
     {n:'Peixe grelhado', u:'100g', k:140},
+    {n:'Tilápia grelhada', u:'100g', k:128},
+    {n:'Salmão grelhado', u:'100g', k:208},
     {n:'Ovo cozido', u:'1 unid', k:70},
     {n:'Pão francês', u:'1 unid', k:150},
+    {n:'Pão de queijo', u:'1 unid médio', k:100},
     {n:'Batata doce', u:'100g', k:90},
+    {n:'Batata inglesa cozida', u:'100g', k:52},
+    {n:'Cuscuz cozido', u:'100g', k:112},
     {n:'Macarrão cozido', u:'100g', k:150},
     {n:'Maçã', u:'1 unid', k:80},
+    {n:'Abacate', u:'100g', k:160},
     {n:'Queijo minas', u:'1 fatia', k:90},
+    {n:'Queijo cottage', u:'100g', k:98},
+    {n:'Iogurte desnatado', u:'100g', k:41},
+    {n:'Leite desnatado', u:'100ml', k:35},
     {n:'Chocolate ao leite', u:'1 quadrado', k:30},
     {n:'Biscoito água e sal', u:'4 unid', k:70},
+    {n:'Pipoca (sem óleo)', u:'100g', k:110},
+    {n:'Castanha do pará', u:'100g', k:643},
+    {n:'Amendoim torrado', u:'100g', k:567},
     {n:'Café com leite', u:'1 xícara', k:40},
+    {n:'Brócolis cozido', u:'100g', k:30},
+    {n:'Cenoura crua', u:'100g', k:34},
     {n:'Salada verde', u:'à vontade', k:15}
   ];
 
@@ -647,7 +678,7 @@
       if (s.baseQty && !(s.n in FOOD_DENSITY_100)) FOOD_DENSITY_100[s.n] = it.k / s.baseQty * 100;
     });
   }));
-  FOOD_DB.forEach(f => { if (f.u === '100g' && !(f.n in FOOD_DENSITY_100)) FOOD_DENSITY_100[f.n] = f.k; });
+  FOOD_DB.forEach(f => { if ((f.u === '100g' || f.u === '100ml') && !(f.n in FOOD_DENSITY_100)) FOOD_DENSITY_100[f.n] = f.k; });
 
   // Alimentos sem densidade conhecida (porção fixa tipo "1 unid", "à vontade") — usa kcal direto, sem escalar
   const FOOD_FIXED_KCAL = {};
@@ -1096,7 +1127,7 @@
     const now = new Date();
     for (let i=6;i>=0;i--){
       const dt = new Date(now); dt.setDate(now.getDate()-i);
-      arr.push(dt.toISOString().slice(0,10));
+      arr.push(localISO(dt));
     }
     return arr;
   }
@@ -1106,7 +1137,7 @@
     const now = new Date();
     const first = new Date(now.getFullYear(), now.getMonth(), 1);
     for (let dt = new Date(first); dt <= now; dt.setDate(dt.getDate()+1)){
-      arr.push(new Date(dt).toISOString().slice(0,10));
+      arr.push(localISO(new Date(dt)));
     }
     return arr;
   }
@@ -1197,7 +1228,7 @@
       const dow = dt.getDay();
       const mondayIndex = (dow===0)?6:dow-1;
       const weekStart = new Date(dt); weekStart.setDate(dt.getDate()-mondayIndex);
-      const key = weekStart.toISOString().slice(0,10);
+      const key = localISO(weekStart);
       if (!weeks[key]) weeks[key] = { total:0, done:0 };
       if (dow>=1 && dow<=5) weeks[key].total++;
       const st = statusMap[iso];
@@ -1639,13 +1670,15 @@
         </div>`).join('')}
       </div>
       <p class="hint" style="margin-top:10px;">Comeu mais ou menos que o previsto (previsto ou substituto)? Ajuste o número ao lado do alimento — a kcal recalcula sozinha.</p>
-      <div class="custom-add" style="margin-top:10px;">
-        <input type="text" class="iname" id="fMealExtraNome-${m.key}" list="foodSuggestions" placeholder="outro alimento fora da lista...">
-        <input type="number" class="ikcal" id="fMealExtraQtd-${m.key}" placeholder="qtd (g)" style="width:76px;">
-        <input type="number" class="ikcal" id="fMealExtraKcal-${m.key}" placeholder="kcal">
-        <button class="btnAddMealExtra" data-meal="${m.key}">adicionar</button>
+      <div class="custom-add-v2" style="margin-top:10px;">
+        <input type="text" class="iname-full" id="fMealExtraNome-${m.key}" list="foodSuggestions" placeholder="outro alimento fora da lista...">
+        <div class="custom-add-row">
+          <input type="number" class="ikcal" id="fMealExtraQtd-${m.key}" placeholder="qtd (g)">
+          <input type="number" class="ikcal" id="fMealExtraKcal-${m.key}" placeholder="kcal">
+          <button class="btnAddMealExtra" data-meal="${m.key}">adicionar</button>
+        </div>
       </div>
-      <p class="hint" style="margin-top:4px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha. Senão, digite a kcal total.</p>
+      <p class="hint" style="margin-top:6px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha. Senão, digite a kcal total.</p>
     `;
     wrap.appendChild(card);
 
@@ -1742,13 +1775,15 @@
           <button class="item-x" data-i="${i}" title="remover">×</button>
         </div>`).join('') || '<p class="hint" style="margin:0;">Nada fora do plano hoje.</p>'}
       </div>
-      <div class="custom-add">
-        <input type="text" class="iname" id="fExtraNome" list="foodSuggestions" placeholder="outro alimento...">
-        <input type="number" class="ikcal" id="fExtraQtd" placeholder="qtd (g)" style="width:76px;">
-        <input type="number" class="ikcal" id="fExtraKcal" placeholder="kcal">
-        <button class="btnAddCustom">adicionar</button>
+      <div class="custom-add-v2">
+        <input type="text" class="iname-full" id="fExtraNome" list="foodSuggestions" placeholder="outro alimento...">
+        <div class="custom-add-row">
+          <input type="number" class="ikcal" id="fExtraQtd" placeholder="qtd (g)">
+          <input type="number" class="ikcal" id="fExtraKcal" placeholder="kcal">
+          <button class="btnAddCustom">adicionar</button>
+        </div>
       </div>
-      <p class="hint" style="margin-top:4px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha.</p>
+      <p class="hint" style="margin-top:6px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha.</p>
       <div class="obs-field"><input type="text" class="iobs" placeholder="observação (opcional)" value="${extras.obs||''}"></div>
     `;
     wrap.appendChild(card);

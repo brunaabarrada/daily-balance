@@ -859,6 +859,7 @@
       if (r) config = Object.assign(config, JSON.parse(r.value));
     } catch(e){}
     await runOneTimeFix_2026_07_23();
+    await runClearWedFood_2026_07_22();
     render();
   }
 
@@ -903,6 +904,24 @@
       }
     } catch(e){}
     try { await storage.set('fix_2026_07_23_done', '1', false); } catch(e){}
+  }
+
+  // Limpa só os campos de Alimentação/Sono de quarta (22/07), pra teste isolado — roda uma vez só
+  async function runClearWedFood_2026_07_22(){
+    try {
+      const already = await storage.get('clear_wed_food_done', false);
+      if (already) return;
+    } catch(e){ /* não existe ainda -> segue e limpa */ }
+    try {
+      const wed = '2026-07-22';
+      const fresh = emptyDay();
+      const wedDay = getDay(wed);
+      ['peso','sono','energia','ciclo','dores','water','plan','mealExtras','extras','suplemento'].forEach(f => {
+        wedDay[f] = fresh[f];
+      });
+      await saveDay(wed);
+    } catch(e){}
+    try { await storage.set('clear_wed_food_done', '1', false); } catch(e){}
   }
 
   function isEditableDayKey(dayKey){

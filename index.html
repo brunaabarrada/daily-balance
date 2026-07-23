@@ -396,6 +396,8 @@
     }
   ];
 
+  const TREINO_TEMPLATES = DIAS.filter(x => x.type === 'treino');
+
   const STATUS_NOTE = {
     verde: 'Energia boa hoje — vale o treino completo.',
     amarelo: 'Faça só os essenciais, reduza uma série se precisar. Já é suficiente.',
@@ -597,7 +599,8 @@
       exercicios: {},
       humor: { mood: null, pensamento: '', reformulacao: '' },
       corrida: { km: null, min: null, conversa: null },
-      notaDia: ''
+      notaDia: '',
+      treinoAlternativo: ''
     };
   }
 
@@ -612,6 +615,7 @@
     if (!d.humor) d.humor = { mood: null, pensamento: '', reformulacao: '' };
     if (!d.corrida) d.corrida = { km: null, min: null, conversa: null };
     if (typeof d.notaDia === 'undefined') d.notaDia = '';
+    if (typeof d.treinoAlternativo === 'undefined') d.treinoAlternativo = '';
     return d;
   }
 
@@ -771,15 +775,29 @@
       }
     } else {
       if (st) html += `<div class="status-note ${st}">${STATUS_NOTE[st]}</div>`;
-      const essDone = editable ? d.essenciais.filter((ex,i)=> getExState(dayData,'e'+i).done).length : 0;
-      html += `<p class="group-label"><span>Essenciais</span>${editable ? `<span>${essDone}/${d.essenciais.length}</span>` : ''}</p>`;
-      html += exList(d.essenciais, 'e');
-      if (st !== 'amarelo' && st !== 'vermelho') {
-        const compDone = editable ? d.complementares.filter((ex,i)=> getExState(dayData,'c'+i).done).length : 0;
-        html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${d.complementares.length}</span>` : ''}</p>`;
-        html += exList(d.complementares, 'c');
+
+      const overrideKey = editable ? (dayData.treinoAlternativo || '') : '';
+      const activeTpl = (overrideKey && overrideKey !== d.key) ? TREINO_TEMPLATES.find(t => t.key === overrideKey) : d;
+
+      if (editable) {
+        html += `<select id="fTreinoAlt" style="margin:14px 0 2px;">
+          <option value="">Fiz o treino previsto (${d.title})</option>
+          ${TREINO_TEMPLATES.filter(t=>t.key!==d.key).map(t=>`<option value="${t.key}" ${overrideKey===t.key?'selected':''}>Adaptei — fiz ${t.title} (${t.label})</option>`).join('')}
+        </select>`;
       }
-      if (d.cardio) html += `<div class="cardio-tag">🏃 ${d.cardio}</div>`;
+      if (overrideKey && overrideKey !== d.key) {
+        html += `<p class="hint" style="margin:4px 0 12px;">Adaptado — o previsto pra hoje era ${d.title}, mas o que conta é o que você conseguiu fazer.</p>`;
+      }
+
+      const essDone = editable ? activeTpl.essenciais.filter((ex,i)=> getExState(dayData,'e'+i).done).length : 0;
+      html += `<p class="group-label"><span>Essenciais</span>${editable ? `<span>${essDone}/${activeTpl.essenciais.length}</span>` : ''}</p>`;
+      html += exList(activeTpl.essenciais, 'e');
+      if (st !== 'amarelo' && st !== 'vermelho') {
+        const compDone = editable ? activeTpl.complementares.filter((ex,i)=> getExState(dayData,'c'+i).done).length : 0;
+        html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${activeTpl.complementares.length}</span>` : ''}</p>`;
+        html += exList(activeTpl.complementares, 'c');
+      }
+      if (activeTpl.cardio) html += `<div class="cardio-tag">🏃 ${activeTpl.cardio}</div>`;
     }
 
     if (editable && d.type !== 'corrida') {
@@ -849,6 +867,13 @@
             toast();
           };
         });
+        const fTreinoAlt = document.getElementById('fTreinoAlt');
+        if (fTreinoAlt) fTreinoAlt.onchange = async (e) => {
+          dayData.treinoAlternativo = e.target.value;
+          await saveDay(dateForDay);
+          toast();
+          render();
+        };
       }
     }
 

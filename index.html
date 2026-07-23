@@ -772,14 +772,21 @@
   async function setStatus(dayKey, v){
     if (isEditableDayKey(dayKey)) {
       const dateForDay = getDateForDayKey(dayKey);
-      statusMap[dateForDay] = v;
-      try { await storage.set('status:'+dateForDay, v, false); } catch(e){}
+      const current = statusMap[dateForDay] || null;
+      const next = (current === v) ? null : v; // clicar de novo na mesma opção desmarca
+      if (next) {
+        statusMap[dateForDay] = next;
+        try { await storage.set('status:'+dateForDay, next, false); } catch(e){}
+      } else {
+        delete statusMap[dateForDay];
+        try { await storage.delete('status:'+dateForDay, false); } catch(e){}
+      }
       const d = getDay(dateForDay);
-      d.treinoFeito = (v === 'verde' || v === 'amarelo');
+      d.treinoFeito = (next === 'verde' || next === 'amarelo');
       await saveDay(dateForDay);
       toast();
     } else {
-      previewStatus[dayKey] = v;
+      previewStatus[dayKey] = (previewStatus[dayKey] === v) ? null : v;
     }
     render();
   }
@@ -1030,7 +1037,8 @@
     if (editable) {
       contentEl.querySelectorAll('.mood-btn').forEach(b => {
         b.onclick = async () => {
-          dayData.humor.mood = parseInt(b.dataset.v);
+          const v = parseInt(b.dataset.v);
+          dayData.humor.mood = (dayData.humor.mood === v) ? null : v;
           await saveDay(dateForDay);
           toast();
           render();

@@ -26,7 +26,19 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
   input, select, textarea{ font-size: 16px !important; } /* evita zoom automático do iOS ao focar campos */
-  input[type="checkbox"]{ width: 19px; height: 19px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0; }
+  input[type="checkbox"]{
+    -webkit-appearance: none; appearance: none;
+    width: 19px; height: 19px; min-width: 19px; flex-shrink: 0;
+    border: 1.5px solid var(--line); border-radius: 5px;
+    background: #fff; cursor: pointer; position: relative;
+    margin: 0; vertical-align: middle;
+  }
+  input[type="checkbox"]:checked{ background: var(--teal); border-color: var(--teal); }
+  input[type="checkbox"]:checked::after{
+    content: ''; position: absolute; left: 6px; top: 2px;
+    width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
   body{
     background:
       radial-gradient(circle at 15% 20%, rgba(91,110,79,0.05) 0, transparent 45%),

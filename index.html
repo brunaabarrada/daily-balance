@@ -596,7 +596,8 @@
       extras: { items: [], obs: '' },
       exercicios: {},
       humor: { mood: null, pensamento: '', reformulacao: '' },
-      corrida: { km: null, min: null, conversa: null }
+      corrida: { km: null, min: null, conversa: null },
+      notaDia: ''
     };
   }
 
@@ -610,6 +611,7 @@
     if (!d.exercicios) d.exercicios = {};
     if (!d.humor) d.humor = { mood: null, pensamento: '', reformulacao: '' };
     if (!d.corrida) d.corrida = { km: null, min: null, conversa: null };
+    if (typeof d.notaDia === 'undefined') d.notaDia = '';
     return d;
   }
 
@@ -780,6 +782,25 @@
       if (d.cardio) html += `<div class="cardio-tag">🏃 ${d.cardio}</div>`;
     }
 
+    if (editable && d.type !== 'corrida') {
+      html += `<details ${(dayData.corrida.km)?'open':''} style="margin:18px 0 0;">
+        <summary>🏃 Correu hoje, fora do previsto? Registrar aqui</summary>
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field"><label>Distância (km)</label><input type="number" step="0.1" id="fCorridaKm" value="${dayData.corrida.km||''}" placeholder="ex: 5"></div>
+          <div class="field"><label>Tempo (min)</label><input type="number" id="fCorridaMin" value="${dayData.corrida.min||''}" placeholder="ex: 30"></div>
+          <div class="field full"><label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:400;"><input type="checkbox" id="fCorridaConversa" ${dayData.corrida.conversa?'checked':''}> Consegui manter o ritmo de conversa</label></div>
+        </div>
+        <p class="hint" style="margin-top:8px;">Conta pra sua progressão de corrida (aba Progressão) do mesmo jeito, não importa em que dia aconteceu.</p>
+      </details>`;
+    }
+
+    if (editable) {
+      html += `<div class="field full" style="margin-top:18px;">
+        <label>📝 Nota do dia (adaptações, o que rolou diferente do plano)</label>
+        <input type="text" id="fNotaDia" value="${dayData.notaDia||''}" placeholder="ex: sem acesso à academia, treinei na do prédio">
+      </div>`;
+    }
+
     if (editable) {
       html += `<p class="group-label" style="margin-top:22px;"><span>Como você está se sentindo${isToday?' hoje':' nesse dia'}?</span></p>
       <div class="mood-row">${MOOD_SCALE.map(m=>`<button class="mood-btn ${dayData.humor.mood===m.v?'selected':''}" data-v="${m.v}" style="--mood-color:${m.color}" title="${m.label}"><span class="mood-icon">${m.icon}</span></button>`).join('')}</div>
@@ -842,10 +863,16 @@
       });
     }
 
-    if (d.type === 'corrida' && editable) {
-      document.getElementById('fCorridaKm').onchange = async (e) => { dayData.corrida.km = parseFloat(e.target.value) || null; await saveDay(dateForDay); toast(); render(); };
-      document.getElementById('fCorridaMin').onchange = async (e) => { dayData.corrida.min = parseFloat(e.target.value) || null; await saveDay(dateForDay); toast(); };
-      document.getElementById('fCorridaConversa').onchange = async (e) => { dayData.corrida.conversa = e.target.checked; await saveDay(dateForDay); toast(); render(); };
+    if (editable) {
+      const fCorridaKm = document.getElementById('fCorridaKm');
+      const fCorridaMin = document.getElementById('fCorridaMin');
+      const fCorridaConversa = document.getElementById('fCorridaConversa');
+      if (fCorridaKm) fCorridaKm.onchange = async (e) => { dayData.corrida.km = parseFloat(e.target.value) || null; await saveDay(dateForDay); toast(); render(); };
+      if (fCorridaMin) fCorridaMin.onchange = async (e) => { dayData.corrida.min = parseFloat(e.target.value) || null; await saveDay(dateForDay); toast(); };
+      if (fCorridaConversa) fCorridaConversa.onchange = async (e) => { dayData.corrida.conversa = e.target.checked; await saveDay(dateForDay); toast(); render(); };
+
+      const fNotaDia = document.getElementById('fNotaDia');
+      if (fNotaDia) fNotaDia.onchange = async (e) => { dayData.notaDia = e.target.value; await saveDay(dateForDay); toast(); };
     }
   }
 

@@ -674,6 +674,7 @@
       water: { count: 0 },
       suplemento: false,
       plan: {},
+      mealExtras: { cafe:[], pos:[], almoco:[], lanche:[], jantar:[] },
       extras: { items: [], obs: '' },
       exercicios: {},
       humor: { mood: null, pensamento: '', reformulacao: '' },
@@ -689,6 +690,8 @@
     const d = checkins[iso];
     if (!d.water) d.water = { count:0 };
     if (!d.plan) d.plan = {};
+    if (!d.mealExtras) d.mealExtras = { cafe:[], pos:[], almoco:[], lanche:[], jantar:[] };
+    MEAL_PLAN.forEach(m => { if (!d.mealExtras[m.key]) d.mealExtras[m.key] = []; });
     if (typeof d.suplemento === 'undefined') d.suplemento = false;
     if (!d.extras) d.extras = { items:[], obs:'' };
     if (!d.exercicios) d.exercicios = {};
@@ -1355,9 +1358,16 @@
     MEAL_PLAN.forEach(m => n += m.items.length);
     return n;
   }
+  function mealExtraTotal(d, mealKey){
+    const items = (d.mealExtras && d.mealExtras[mealKey]) || [];
+    return items.reduce((s,it)=> s + it.k*it.qty, 0);
+  }
   function dayTotalKcal(d){
     let total = 0;
-    MEAL_PLAN.forEach(m => m.items.forEach(it => { total += itemKcal(it, getItemState(d,it)); }));
+    MEAL_PLAN.forEach(m => {
+      m.items.forEach(it => { total += itemKcal(it, getItemState(d,it)); });
+      total += mealExtraTotal(d, m.key);
+    });
     total += extrasTotal(d.extras);
     return total;
   }
@@ -1545,7 +1555,8 @@
 
   function renderMealPlanCard(m, today){
     const wrap = document.getElementById('mealsWrap');
-    const kcalDone = m.items.reduce((s,it)=> s + itemKcal(it, getItemState(today,it)), 0);
+    const extraItems = (today.mealExtras && today.mealExtras[m.key]) || [];
+    const kcalDone = m.items.reduce((s,it)=> s + itemKcal(it, getItemState(today,it)), 0) + mealExtraTotal(today, m.key);
     const card = document.createElement('div');
     card.className = 'meal-card';
     card.innerHTML = `
@@ -1574,8 +1585,19 @@
           </div>
         </div>`;
       }).join('')}
+      ${extraItems.map((it,i)=>`
+        <div class="item-row">
+          <span class="item-name">${it.n}${it.qty>1?' ×'+it.qty:''}</span>
+          <span class="item-kcal">${it.k*it.qty} kcal</span>
+          <button class="item-x meal-extra-x" data-meal="${m.key}" data-i="${i}" title="remover">×</button>
+        </div>`).join('')}
       </div>
       <p class="hint" style="margin-top:10px;">Comeu mais ou menos que o previsto (previsto ou substituto)? Ajuste o número ao lado do alimento — a kcal recalcula sozinha.</p>
+      <div class="custom-add" style="margin-top:10px;">
+        <input type="text" class="iname" id="fMealExtraNome-${m.key}" placeholder="outro alimento fora da lista...">
+        <input type="number" class="ikcal" id="fMealExtraKcal-${m.key}" placeholder="kcal">
+        <button class="btnAddMealExtra" data-meal="${m.key}">adicionar</button>
+      </div>
     `;
     wrap.appendChild(card);
 
@@ -1614,6 +1636,27 @@
         render();
       };
     });
+    card.querySelectorAll('.meal-extra-x').forEach(btn => {
+      btn.onclick = async () => {
+        today.mealExtras[btn.dataset.meal].splice(parseInt(btn.dataset.i), 1);
+        await saveDay(todayISO);
+        toast();
+        render();
+      };
+    });
+    const btnAdd = card.querySelector('.btnAddMealExtra');
+    if (btnAdd) btnAdd.onclick = async () => {
+      const nomeInput = document.getElementById('fMealExtraNome-'+m.key);
+      const kcalInput = document.getElementById('fMealExtraKcal-'+m.key);
+      const nome = nomeInput.value.trim();
+      const kcal = parseInt(kcalInput.value);
+      if (!nome || !kcal) return;
+      if (!today.mealExtras[m.key]) today.mealExtras[m.key] = [];
+      today.mealExtras[m.key].push({ n: nome, k: kcal, qty: 1 });
+      await saveDay(todayISO);
+      toast();
+      render();
+    };
   }
 
   function renderExtrasCard(today){

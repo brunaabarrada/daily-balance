@@ -214,11 +214,24 @@
   }
   .chip:hover{ border-color: var(--teal); color: var(--teal); }
   .item-list{ margin-bottom: 8px; }
-  .item-row{ display:flex; align-items:center; gap: 8px; font-size: 13.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .item-row{ display:flex; align-items:center; gap: 8px; font-size: 13.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); flex-wrap: wrap; }
   .item-row:last-child{ border-bottom:none; }
-  .item-name{ flex:1; }
+  .item-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .item-kcal{ font-family:'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--ink-soft); white-space:nowrap; }
   .item-x{ background:none; border:none; color: var(--brick); cursor:pointer; font-size: 15px; line-height:1; padding: 0 2px; }
+
+  .item-check-label{ display:flex; align-items:center; gap:8px; flex:1 1 160px; min-width:0; cursor:pointer; }
+  .item-name-wrap{ flex:1; min-width:0; overflow:hidden; }
+  .plan-sel{
+    width:100%; max-width:100%; box-sizing:border-box;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--paper);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .item-meta{ display:flex; align-items:center; gap:8px; flex-shrink:0; margin-left:auto; }
+  .qty-box{ display:flex; align-items:center; gap:4px; font-size:12px; color:var(--ink-soft); white-space:nowrap; }
+  .plan-qty{ width:52px; font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--paper); box-sizing:border-box; }
+  .qty-unit{ font-size:12px; color:var(--ink-soft); }
   .custom-add{ display:flex; gap: 6px; margin-top: 8px; flex-wrap:wrap; }
   .custom-add input{ font-family:'IBM Plex Mono', monospace; border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-size: 12.5px; background: var(--paper); }
   .custom-add input.iname{ flex: 1; min-width: 120px; }
@@ -394,7 +407,7 @@
   // meta diária ~1850 kcal — leve superávit calórico, recalculado para 47,5kg
   const MEAL_PLAN = [
     { key:'cafe', label:'Café da manhã / Pré-treino', items:[
-      { id:'cafe-0', n:'Ovo (mexido, cozido, omelete ou frito c/ pouco óleo)', q:'90g (~2 unid)', k:179, baseQty:90, unit:'g', subs:[{n:'Peito de frango grelhado', q:'112g'}] },
+      { id:'cafe-0', n:'Ovo (a gosto)', q:'90g (~2 unid)', k:179, baseQty:90, unit:'g', subs:[{n:'Peito de frango grelhado', q:'112g'}] },
       { id:'cafe-1', n:'Pão de forma integral', q:'50g (2 fatias)', k:126, baseQty:50, unit:'g', subs:[{n:'Pão de forma tradicional', q:'50g'}] },
       { id:'cafe-2', n:'Uva Rubi ou Itália', q:'80g', k:42, baseQty:80, unit:'g', subs:[{n:'Morango', q:'87g'}] },
       { id:'cafe-3', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[] }
@@ -1338,22 +1351,24 @@
       <div class="item-list">${m.items.map(it => {
         const state = getItemState(today, it);
         const optsHtml = it.subs.length
-          ? `<select class="plan-sel" data-id="${it.id}" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid var(--line); border-radius:6px; padding:3px 5px; background:var(--paper);">
+          ? `<select class="plan-sel" data-id="${it.id}">
                <option value="0" ${state.sel===0?'selected':''}>${it.n} · ${it.q}</option>
                ${it.subs.map((s,si)=>`<option value="${si+1}" ${state.sel===si+1?'selected':''}>${s.n} · ${s.q}</option>`).join('')}
              </select>`
           : `<span class="item-name">${it.n} · ${it.q}</span>`;
         const showQtyInput = it.baseQty && state.sel === 0;
         const qtyHtml = showQtyInput
-          ? `<input type="number" class="plan-qty" data-id="${it.id}" value="${state.qty}" style="width:52px; font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--paper);"> ${it.unit}`
+          ? `<input type="number" class="plan-qty" data-id="${it.id}" value="${state.qty}"> <span class="qty-unit">${it.unit}</span>`
           : '';
-        return `<div class="item-row" style="flex-wrap:wrap;">
-          <label style="display:flex; align-items:center; gap:8px; flex:1; min-width:180px; cursor:pointer;">
+        return `<div class="item-row">
+          <label class="item-check-label">
             <input type="checkbox" class="plan-chk" data-id="${it.id}" ${state.done?'checked':''}>
-            ${optsHtml}
+            <span class="item-name-wrap">${optsHtml}</span>
           </label>
-          ${qtyHtml ? `<span style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--ink-soft); white-space:nowrap;">${qtyHtml}</span>` : ''}
-          <span class="item-kcal">${itemKcal(it, state)} kcal</span>
+          <div class="item-meta">
+            ${qtyHtml ? `<span class="qty-box">${qtyHtml}</span>` : ''}
+            <span class="item-kcal">${itemKcal(it, state)} kcal</span>
+          </div>
         </div>`;
       }).join('')}
       </div>

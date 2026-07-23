@@ -421,33 +421,100 @@
   // meta diária ~1850 kcal — leve superávit calórico, recalculado para 47,5kg
   const MEAL_PLAN = [
     { key:'cafe', label:'Café da manhã / Pré-treino', items:[
-      { id:'cafe-0', n:'Ovo (a gosto)', q:'90g (~2 unid)', k:179, baseQty:90, unit:'g', subs:[{n:'Peito de frango grelhado', q:'112g'}] },
-      { id:'cafe-1', n:'Pão de forma integral', q:'50g (2 fatias)', k:126, baseQty:50, unit:'g', subs:[{n:'Pão de forma tradicional', q:'50g'}] },
-      { id:'cafe-2', n:'Uva Rubi ou Itália', q:'80g', k:42, baseQty:80, unit:'g', subs:[{n:'Morango', q:'87g'}] },
-      { id:'cafe-3', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[] }
+      { id:'cafe-0', n:'Ovo (a gosto)', q:'90g (~2 unid)', k:179, baseQty:90, unit:'g', subs:[
+        {n:'Peito de frango grelhado', q:'112g'},
+        {n:'Atum em água (drenado)', q:'154g'},
+        {n:'Peito de peru fatiado', q:'172g'},
+        {n:'Whey Protein', q:'44g'}
+      ]},
+      { id:'cafe-1', n:'Pão de forma integral', q:'50g (2 fatias)', k:126, baseQty:50, unit:'g', subs:[
+        {n:'Pão de forma tradicional', q:'50g'},
+        {n:'Pão francês', q:'47g'},
+        {n:'Tapioca (goma hidratada)', q:'105g'},
+        {n:'Aveia em flocos', q:'32g'}
+      ]},
+      { id:'cafe-2', n:'Uva Rubi ou Itália', q:'80g', k:42, baseQty:80, unit:'g', subs:[
+        {n:'Morango', q:'87g'},
+        {n:'Mamão', q:'105g'},
+        {n:'Melancia', q:'140g'},
+        {n:'Banana nanica', q:'46g'},
+        {n:'Kiwi', q:'82g'},
+        {n:'Laranja', q:'93g'}
+      ]},
+      { id:'cafe-3', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[
+        {n:'Iogurte grego natural', q:'42g'},
+        {n:'Coalhada', q:'67g'}
+      ]}
     ]},
     { key:'pos', label:'Pós-treino', items:[
-      { id:'pos-0', n:'Whey Protein', q:'20g (dose cheia)', k:82, baseQty:20, unit:'g', subs:[] },
-      { id:'pos-1', n:'Leite de vaca sem lactose', q:'200ml', k:128, baseQty:200, unit:'ml', subs:[] },
-      { id:'pos-2', n:'Banana nanica', q:'120g', k:110, baseQty:120, unit:'g', subs:[] },
-      { id:'pos-3', n:'Pasta de amendoim', q:'15g', k:88, baseQty:15, unit:'g', subs:[] }
+      { id:'pos-0', n:'Whey Protein', q:'20g (dose cheia)', k:82, baseQty:20, unit:'g', subs:[
+        {n:'Peito de frango desfiado', q:'50g'}
+      ]},
+      { id:'pos-1', n:'Leite de vaca sem lactose', q:'200ml', k:128, baseQty:200, unit:'ml', subs:[
+        {n:'Leite integral comum', q:'210ml'}
+      ]},
+      { id:'pos-2', n:'Banana nanica', q:'120g', k:110, baseQty:120, unit:'g', subs:[
+        {n:'Manga', q:'183g'},
+        {n:'Uva Rubi ou Itália', q:'208g'}
+      ]},
+      { id:'pos-3', n:'Pasta de amendoim', q:'15g', k:88, baseQty:15, unit:'g', subs:[
+        {n:'Castanhas mistas', q:'15g'}
+      ]}
     ]},
     { key:'almoco', label:'Almoço', items:[
-      { id:'almoco-0', n:'Arroz branco cozido', q:'120g', k:154, baseQty:120, unit:'g', subs:[{n:'Batata doce cozida', q:'85g'},{n:'Macarrão, alho e óleo', q:'equivalente'}] },
-      { id:'almoco-1', n:'Peito de frango grelhado', q:'60g', k:96, baseQty:60, unit:'g', subs:[{n:'Carne vermelha magra sem gordura', q:'44g'}] },
+      { id:'almoco-0', n:'Arroz branco cozido', q:'120g', k:154, baseQty:120, unit:'g', subs:[
+        {n:'Batata doce cozida', q:'85g'},
+        {n:'Macarrão, alho e óleo', q:'equivalente'},
+        {n:'Quinoa cozida', q:'128g'},
+        {n:'Mandioca/aipim cozido', q:'123g'}
+      ]},
+      { id:'almoco-1', n:'Peito de frango grelhado', q:'60g', k:96, baseQty:60, unit:'g', subs:[
+        {n:'Carne vermelha magra sem gordura', q:'44g'},
+        {n:'Peixe grelhado', q:'69g'},
+        {n:'Ovo (a gosto)', q:'48g'}
+      ]},
       { id:'almoco-2', n:'Vegetais A (à vontade)', q:'livre', k:0, baseQty:null, unit:null, subs:[] },
-      { id:'almoco-3', n:'Azeite extra virgem', q:'8g', k:71, baseQty:8, unit:'g', subs:[] }
+      { id:'almoco-3', n:'Azeite extra virgem', q:'8g', k:71, baseQty:8, unit:'g', subs:[
+        {n:'Manteiga', q:'10g'}
+      ]}
     ]},
     { key:'lanche', label:'Lanche da tarde', items:[
-      { id:'lanche-0', n:'Uva Rubi ou Itália', q:'100g', k:53, baseQty:100, unit:'g', subs:[{n:'Maçã fuji', q:'175g'},{n:'Morango', q:'95g'}] },
-      { id:'lanche-1', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[] },
-      { id:'lanche-2', n:'Granola', q:'30g', k:147, baseQty:30, unit:'g', subs:[] }
+      { id:'lanche-0', n:'Uva Rubi ou Itália', q:'100g', k:53, baseQty:100, unit:'g', subs:[
+        {n:'Maçã fuji', q:'175g'},
+        {n:'Morango', q:'95g'},
+        {n:'Pera', q:'100g'},
+        {n:'Melão', q:'177g'},
+        {n:'Abacaxi', q:'110g'}
+      ]},
+      { id:'lanche-1', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[
+        {n:'Iogurte grego natural', q:'42g'},
+        {n:'Coalhada', q:'67g'}
+      ]},
+      { id:'lanche-2', n:'Granola', q:'30g', k:147, baseQty:30, unit:'g', subs:[
+        {n:'Aveia em flocos', q:'38g'},
+        {n:'Castanhas mistas', q:'24g'}
+      ]}
     ]},
     { key:'jantar', label:'Jantar', items:[
-      { id:'jantar-0', n:'Carne vermelha magra sem gordura', q:'65g', k:143, baseQty:65, unit:'g', subs:[{n:'Peito de frango grelhado', q:'90g'}] },
-      { id:'jantar-1', n:'Macarrão integral c/ molho de tomate', q:'150g', k:171, baseQty:150, unit:'g', subs:[{n:'Arroz branco cozido', q:'133g'}] },
-      { id:'jantar-2', n:'Suco integral de uva', q:'200ml', k:122, baseQty:200, unit:'ml', subs:[] },
-      { id:'jantar-3', n:'Doce de leite', q:'25g', k:77, baseQty:25, unit:'g', subs:[{n:'Chocolate ao leite', q:'14g'},{n:'Chocolate meio amargo', q:'16g'}] }
+      { id:'jantar-0', n:'Carne vermelha magra sem gordura', q:'65g', k:143, baseQty:65, unit:'g', subs:[
+        {n:'Peito de frango grelhado', q:'90g'},
+        {n:'Peixe grelhado', q:'102g'},
+        {n:'Lombo suíno magro', q:'100g'}
+      ]},
+      { id:'jantar-1', n:'Macarrão integral c/ molho de tomate', q:'150g', k:171, baseQty:150, unit:'g', subs:[
+        {n:'Arroz branco cozido', q:'133g'},
+        {n:'Batata doce cozida', q:'190g'},
+        {n:'Quinoa cozida', q:'142g'}
+      ]},
+      { id:'jantar-2', n:'Suco integral de uva', q:'200ml', k:122, baseQty:200, unit:'ml', subs:[
+        {n:'Suco de laranja natural', q:'271ml'}
+      ]},
+      { id:'jantar-3', n:'Doce de leite', q:'25g', k:77, baseQty:25, unit:'g', subs:[
+        {n:'Chocolate ao leite', q:'14g'},
+        {n:'Chocolate meio amargo', q:'16g'},
+        {n:'Mel', q:'25g'},
+        {n:'Geleia de frutas', q:'30g'}
+      ]}
     ]}
   ];
   const DEFAULT_KCAL_GOAL = 1850;

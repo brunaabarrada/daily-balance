@@ -837,7 +837,51 @@
       const r = await storage.get('config', false);
       if (r) config = Object.assign(config, JSON.parse(r.value));
     } catch(e){}
+    await runOneTimeFix_2026_07_23();
     render();
+  }
+
+  // Correção única: bug antigo de fuso horário fez dados digitados na noite de
+  // 22/07 (quarta) serem salvos por engano na gaveta de 23/07 (quinta). Move de volta.
+  function isFieldEmptyValue(f, val){
+    if (f==='corrida') return !val || val.km===null || val.km===undefined;
+    if (f==='humor') return !val || val.mood===null || val.mood===undefined;
+    if (f==='plan') return !val || Object.keys(val).length===0;
+    if (f==='mealExtras') return !val || Object.values(val).every(arr=>!arr||arr.length===0);
+    if (f==='extras') return !val || (!val.items || val.items.length===0);
+    if (f==='water') return !val || !val.count;
+    if (f==='notaDia') return !val;
+    if (f==='suplemento') return !val;
+    return true;
+  }
+  async function runOneTimeFix_2026_07_23(){
+    try {
+      const already = await storage.get('fix_2026_07_23_done', false);
+      if (already) return;
+    } catch(e){ /* não existe ainda -> segue e roda a correção */ }
+    try {
+      const wed = '2026-07-22', thu = '2026-07-23';
+      if (checkins[thu]) {
+        const thuDay = getDay(thu);
+        const wedDay = getDay(wed);
+        const fields = ['corrida','humor','plan','mealExtras','extras','water','notaDia','suplemento'];
+        let moved = false;
+        fields.forEach(f => {
+          const wedEmpty = isFieldEmptyValue(f, wedDay[f]);
+          const thuHasData = !isFieldEmptyValue(f, thuDay[f]);
+          if (wedEmpty && thuHasData) {
+            wedDay[f] = thuDay[f];
+            thuDay[f] = emptyDay()[f];
+            moved = true;
+          }
+        });
+        if (moved) {
+          await saveDay(wed);
+          await saveDay(thu);
+        }
+      }
+    } catch(e){}
+    try { await storage.set('fix_2026_07_23_done', '1', false); } catch(e){}
   }
 
   function isEditableDayKey(dayKey){

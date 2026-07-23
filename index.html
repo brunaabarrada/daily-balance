@@ -639,11 +639,14 @@
   ])).sort();
 
   const ALL_FOOD_KCAL = {};
-  FOOD_DB.forEach(f => { ALL_FOOD_KCAL[f.n] = f.k; });
+  // 1) substitutos primeiro (prioridade mais baixa — o valor deles é "emprestado" do item que substituem)
   MEAL_PLAN.forEach(m => m.items.forEach(it => {
-    if (!(it.n in ALL_FOOD_KCAL)) ALL_FOOD_KCAL[it.n] = it.k;
     (it.subs||[]).forEach(s => { if (!(s.n in ALL_FOOD_KCAL)) ALL_FOOD_KCAL[s.n] = it.k; });
   }));
+  // 2) base de alimentos extras
+  FOOD_DB.forEach(f => { ALL_FOOD_KCAL[f.n] = f.k; });
+  // 3) itens principais do plano por último — sempre vencem, é o valor "de verdade" daquele alimento
+  MEAL_PLAN.forEach(m => m.items.forEach(it => { ALL_FOOD_KCAL[it.n] = it.k; }));
 
   const WEEKDAY_IDX = new Date().getDay(); // 0=domingo
   const TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][WEEKDAY_IDX];

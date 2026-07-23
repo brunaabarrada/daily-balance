@@ -962,11 +962,11 @@
     DIAS.forEach(d => {
       const st = statusFor(d.key);
       const btn = document.createElement('button');
-      btn.className = 'waypoint' + (currentTab==='plano' && currentDayKey===d.key ? ' active' : '');
+      btn.className = 'waypoint' + (currentDayKey===d.key ? ' active' : '');
       btn.innerHTML = `<span class="dot${st ? ' status-'+st : ''}">${d.type==='descanso' ? '·' : (d.type==='corrida' ? '↝' : '')}</span>
         <span class="label">${d.label}</span>
         ${d.key===TODAY_KEY ? '<span class="today-mark">hoje</span>' : ''}`;
-      btn.onclick = () => { currentTab='plano'; currentDayKey = d.key; render(); };
+      btn.onclick = () => { currentDayKey = d.key; render(); };
       row.appendChild(btn);
     });
   }
@@ -1575,11 +1575,15 @@
     const stats = computeStats(dates);
     const { pesoAvg, sonoAvg, energiaAvg, kcalAvg, waterAvg, verde, amarelo, vermelho, treinoDias, registrados, totalDias } = stats;
 
-    const today = getDay(todayISO);
+    const selDay = DIAS.find(x=>x.key===currentDayKey);
+    const selDate = getDateForDayKey(currentDayKey);
+    const selEditable = isEditableDayKey(currentDayKey);
+    const isSelToday = currentDayKey === TODAY_KEY;
+    const today = selEditable ? getDay(selDate) : null;
     const goalKcal = parseInt(config.calorieGoal) || DEFAULT_KCAL_GOAL;
     const goalBottles = parseInt(config.waterGoalBottles) || 3;
-    const todayKcal = dayTotalKcal(today);
-    const kcalPct = goalKcal ? Math.min(100, Math.round(todayKcal/goalKcal*100)) : 0;
+    const todayKcal = today ? dayTotalKcal(today) : 0;
+    const kcalPct = (goalKcal && today) ? Math.min(100, Math.round(todayKcal/goalKcal*100)) : 0;
     const latestWeight = getLatestWeight();
     const waterMinL = (latestWeight*25/1000).toFixed(1);
     const waterMaxL = (latestWeight*50/1000).toFixed(1);
@@ -1591,7 +1595,7 @@
     html += `<div class="card-head"><div>
       <p class="card-eyebrow">${panelRange==='mes' ? monthName : 'Últimos 7 dias'}</p>
       <h2 class="card-title">Painel</h2>
-      <p class="card-focus">Poucos números, sem cobrança. Marque o que fizer sentido hoje.</p>
+      <p class="card-focus">Poucos números, sem cobrança. Marque o que fizer sentido no dia.</p>
     </div></div>`;
 
     html += `<div class="tabs-secondary">
@@ -1635,54 +1639,59 @@
       <p class="hint" style="margin-top:8px;">Meta calórica recalculada para seu peso atual (47,5kg, ~2,3g/kg proteína) · Água: 25–50 ml/kg/dia → ${waterMinL}–${waterMaxL} L para ${latestWeight}kg</p>
     </details>`;
 
-    html += `<p class="group-label">Registro de hoje <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--teal);">— ${DIAS.find(x=>x.key===TODAY_KEY).label}, ${todayISO.slice(8,10)}/${todayISO.slice(5,7)}</span></p>
-    <p class="hint" style="margin-top:-4px; margin-bottom:14px;">Esta aba sempre mostra o dia de hoje — navegar pelos dias da semana na aba "Treino e Humor" não muda o que aparece aqui.</p>
-    <div class="form-grid">
-      <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="fPeso" value="${today.peso||''}" placeholder="ex: 48.2"></div>
-      <div class="field"><label>Sono (horas)</label><input type="number" step="0.5" min="0" max="14" id="fSono" value="${today.sono||''}" placeholder="ex: 7.5"></div>
-      <div class="field"><label>Energia (1–5)</label><select id="fEnergia">
-        <option value="">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${today.energia==n?'selected':''}>${n}</option>`).join('')}
-      </select></div>
-    </div>
+    html += `<p class="group-label">Registro <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--teal);">— ${selDay.label}${isSelToday?' · hoje':''}, ${selDate.slice(8,10)}/${selDate.slice(5,7)}</span></p>
+    <p class="hint" style="margin-top:-4px; margin-bottom:14px;">Essa aba mostra o mesmo dia selecionado na trilha lá em cima — troque de dia por ali, não só aqui.</p>`;
 
-    <details style="margin:12px 0 20px;">
-      <summary>Ciclo, dores e outros detalhes (opcional)</summary>
-      <div class="form-grid" style="margin-top:10px;">
-        <div class="field"><label>Ciclo menstrual</label><select id="fCiclo">
-          <option value="">—</option>
-          <option value="regular" ${today.ciclo==='regular'?'selected':''}>regular</option>
-          <option value="irregular" ${today.ciclo==='irregular'?'selected':''}>irregular esta semana</option>
+    if (!selEditable) {
+      html += `<div class="rest-block"><p class="big">📅 esse dia ainda não chegou</p><p class="sub">Volte pra trilha e escolha hoje ou um dia que já passou pra registrar.</p></div>`;
+    } else {
+      html += `<div class="form-grid">
+        <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="fPeso" value="${today.peso||''}" placeholder="ex: 48.2"></div>
+        <div class="field"><label>Sono (horas)</label><input type="number" step="0.5" min="0" max="14" id="fSono" value="${today.sono||''}" placeholder="ex: 7.5"></div>
+        <div class="field"><label>Energia (1–5)</label><select id="fEnergia">
+          <option value="">—</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${today.energia==n?'selected':''}>${n}</option>`).join('')}
         </select></div>
-        <div class="field full"><label>Dores / desconfortos</label><input type="text" id="fDores" value="${today.dores||''}" placeholder="ex: nenhuma / leve na lombar"></div>
       </div>
-    </details>
 
-    <p class="hint" style="margin:-8px 0 20px;">O humor de hoje fica na aba "Treino e Humor" — cada carinha já registra na hora.</p>
+      <details style="margin:12px 0 20px;">
+        <summary>Ciclo, dores e outros detalhes (opcional)</summary>
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field"><label>Ciclo menstrual</label><select id="fCiclo">
+            <option value="">—</option>
+            <option value="regular" ${today.ciclo==='regular'?'selected':''}>regular</option>
+            <option value="irregular" ${today.ciclo==='irregular'?'selected':''}>irregular esta semana</option>
+          </select></div>
+          <div class="field full"><label>Dores / desconfortos</label><input type="text" id="fDores" value="${today.dores||''}" placeholder="ex: nenhuma / leve na lombar"></div>
+        </div>
+      </details>
 
-    <p class="group-label">Água</p>
-    <div class="water-row">
-      <div class="bottles" id="bottles"></div>
-      <span class="water-total" id="waterTotal"></span>
-    </div>
+      <p class="hint" style="margin:-8px 0 20px;">O humor desse dia fica na aba "Treino e Humor" — cada carinha já registra na hora.</p>
 
-    <p class="group-label">Alimentação<span style="font-weight:400; text-transform:none; letter-spacing:0;">${todayKcal} / ${goalKcal} kcal · ${planItemsChecked(today)}/${planItemsTotal()} itens do plano</span></p>
-    <div class="kcal-progress-wrap"><div class="kcal-progress-bar"><div class="kcal-progress-fill" style="width:${kcalPct}%"></div></div></div>
-    <div id="mealsWrap"></div>
-
-    <div class="meal-card">
-      <div class="meal-head"><span class="meal-title">Suplemento</span></div>
-      <div class="item-row" style="border-bottom:none;">
-        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-          <input type="checkbox" id="fSuplemento" ${today.suplemento?'checked':''}>
-          Multivitamínico — 1 dose (qualquer horário)
-        </label>
+      <p class="group-label">Água</p>
+      <div class="water-row">
+        <div class="bottles" id="bottles"></div>
+        <span class="water-total" id="waterTotal"></span>
       </div>
-    </div>
 
-    <p class="group-label">Fora do plano (extras)</p>
-    <div id="extrasWrap"></div>
+      <p class="group-label">Alimentação<span style="font-weight:400; text-transform:none; letter-spacing:0;">${todayKcal} / ${goalKcal} kcal · ${planItemsChecked(today)}/${planItemsTotal()} itens do plano</span></p>
+      <div class="kcal-progress-wrap"><div class="kcal-progress-bar"><div class="kcal-progress-fill" style="width:${kcalPct}%"></div></div></div>
+      <div id="mealsWrap"></div>
 
-    <details style="margin: 16px 0 4px;">
+      <div class="meal-card">
+        <div class="meal-head"><span class="meal-title">Suplemento</span></div>
+        <div class="item-row" style="border-bottom:none;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="fSuplemento" ${today.suplemento?'checked':''}>
+            Multivitamínico — 1 dose (qualquer horário)
+          </label>
+        </div>
+      </div>
+
+      <p class="group-label">Fora do plano (extras)</p>
+      <div id="extrasWrap"></div>`;
+    }
+
+    html += `<details style="margin: 16px 0 4px;">
       <summary>Orientações da nutri</summary>
       <ul style="margin:10px 0 0; padding-left:18px; font-size:13px; color:var(--ink-soft); line-height:1.7;">
         ${ORIENTACOES.map(o=>`<li>${o}</li>`).join('')}
@@ -1697,20 +1706,22 @@
     document.getElementById('rangeSemana').onclick = () => { panelRange = '7d'; render(); };
     document.getElementById('rangeMes').onclick = () => { panelRange = 'mes'; render(); };
 
-    renderBottles(today, goalBottles);
-    MEAL_PLAN.forEach(m => renderMealPlanCard(m, today));
-    renderExtrasCard(today);
+    if (selEditable) {
+      renderBottles(today, goalBottles, selDate);
+      MEAL_PLAN.forEach(m => renderMealPlanCard(m, today, selDate));
+      renderExtrasCard(today, selDate);
+
+      document.getElementById('fPeso').onchange = async (e) => { today.peso = e.target.value || null; await saveDay(selDate); toast(); render(); };
+      document.getElementById('fSono').onchange = async (e) => { today.sono = e.target.value || null; await saveDay(selDate); toast(); };
+      document.getElementById('fEnergia').onchange = async (e) => { today.energia = e.target.value || null; await saveDay(selDate); toast(); };
+      document.getElementById('fCiclo').onchange = async (e) => { today.ciclo = e.target.value || null; await saveDay(selDate); toast(); };
+      document.getElementById('fDores').onchange = async (e) => { today.dores = e.target.value || null; await saveDay(selDate); toast(); };
+      document.getElementById('fSuplemento').onchange = async (e) => { today.suplemento = e.target.checked; await saveDay(selDate); toast(); };
+    }
     renderEntries(dates);
 
     document.getElementById('fGoalKcal').onchange = async (e) => { config.calorieGoal = e.target.value; await saveConfig(); toast(); render(); };
     document.getElementById('fGoalWater').onchange = async (e) => { config.waterGoalBottles = e.target.value; await saveConfig(); toast(); render(); };
-
-    document.getElementById('fPeso').onchange = async (e) => { today.peso = e.target.value || null; await saveDay(todayISO); toast(); render(); };
-    document.getElementById('fSono').onchange = async (e) => { today.sono = e.target.value || null; await saveDay(todayISO); toast(); };
-    document.getElementById('fEnergia').onchange = async (e) => { today.energia = e.target.value || null; await saveDay(todayISO); toast(); };
-    document.getElementById('fCiclo').onchange = async (e) => { today.ciclo = e.target.value || null; await saveDay(todayISO); toast(); };
-    document.getElementById('fDores').onchange = async (e) => { today.dores = e.target.value || null; await saveDay(todayISO); toast(); };
-    document.getElementById('fSuplemento').onchange = async (e) => { today.suplemento = e.target.checked; await saveDay(todayISO); toast(); };
 
     document.getElementById('btnReset').onclick = async () => {
       if (!confirm('Isso apaga todos os registros e configurações salvas neste navegador. Continuar?')) return;
@@ -1726,7 +1737,7 @@
     };
   }
 
-  function renderBottles(today, goalBottles){
+  function renderBottles(today, goalBottles, dateForSave){
     const box = document.getElementById('bottles');
     const count = today.water.count || 0;
     const total = Math.max(goalBottles + 1, count + 1);
@@ -1738,13 +1749,13 @@
       b.innerHTML = bottleSvg();
       b.onclick = async () => {
         today.water.count = (i === count) ? i-1 : i;
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
       box.appendChild(b);
     }
-    document.getElementById('waterTotal').textContent = (count*0.8).toFixed(1) + ' L hoje (garrafinha de 800ml)';
+    document.getElementById('waterTotal').textContent = (count*0.8).toFixed(1) + ' L nesse dia (garrafinha de 800ml)';
   }
 
   function findItemById(id){
@@ -1752,7 +1763,7 @@
     return null;
   }
 
-  function renderMealPlanCard(m, today){
+  function renderMealPlanCard(m, today, dateForSave){
     const wrap = document.getElementById('mealsWrap');
     const extraItems = (today.mealExtras && today.mealExtras[m.key]) || [];
     const kcalDone = m.items.reduce((s,it)=> s + itemKcal(it, getItemState(today,it)), 0) + mealExtraTotal(today, m.key);
@@ -1810,7 +1821,7 @@
         const state = getItemState(today, it);
         state.done = e.target.checked;
         today.plan[it.id] = state;
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1823,7 +1834,7 @@
         const opt = activeOption(it, state);
         state.qty = opt.baseQty || 0; // reinicia a quantidade pro padrão da opção escolhida
         today.plan[it.id] = state;
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1834,7 +1845,7 @@
         const state = getItemState(today, it);
         state.qty = parseFloat(e.target.value) || 0;
         today.plan[it.id] = state;
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1842,7 +1853,7 @@
     card.querySelectorAll('.meal-extra-x').forEach(btn => {
       btn.onclick = async () => {
         today.mealExtras[btn.dataset.meal].splice(parseInt(btn.dataset.i), 1);
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1876,13 +1887,13 @@
       if (!nome || !kcal) return;
       if (!today.mealExtras[m.key]) today.mealExtras[m.key] = [];
       today.mealExtras[m.key].push({ n: nome, k: kcal, qty: 1 });
-      await saveDay(todayISO);
+      await saveDay(dateForSave);
       toast();
       render();
     };
   }
 
-  function renderExtrasCard(today){
+  function renderExtrasCard(today, dateForSave){
     const wrap = document.getElementById('extrasWrap');
     const extras = today.extras;
     const card = document.createElement('div');
@@ -1916,7 +1927,7 @@
         const existing = extras.items.find(it => it.n === f.n && it.k === f.k);
         if (existing) existing.qty += 1;
         else extras.items.push({ n: f.n, k: f.k, qty: 1 });
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1924,7 +1935,7 @@
     card.querySelectorAll('.item-x').forEach(btn => {
       btn.onclick = async () => {
         extras.items.splice(parseInt(btn.dataset.i), 1);
-        await saveDay(todayISO);
+        await saveDay(dateForSave);
         toast();
         render();
       };
@@ -1956,13 +1967,13 @@
       const kcal = parseInt(kcalEl.value);
       if (!name || !kcal) return;
       extras.items.push({ n: name, k: kcal, qty: 1 });
-      await saveDay(todayISO);
+      await saveDay(dateForSave);
       toast();
       render();
     };
     card.querySelector('.iobs').onchange = async (e) => {
       extras.obs = e.target.value;
-      await saveDay(todayISO);
+      await saveDay(dateForSave);
       toast();
     };
   }
@@ -2011,7 +2022,7 @@
     }
   }
 
-  document.getElementById('tabPlano').onclick = () => { currentTab='plano'; currentDayKey = TODAY_KEY; render(); };
+  document.getElementById('tabPlano').onclick = () => { currentTab='plano'; render(); };
   document.getElementById('tabPainel').onclick = () => { currentTab='painel'; render(); };
   document.getElementById('tabDash').onclick = () => { currentTab='dash'; render(); };
 

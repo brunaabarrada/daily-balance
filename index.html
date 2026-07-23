@@ -653,6 +653,13 @@
   const FOOD_FIXED_KCAL = {};
   FOOD_DB.forEach(f => { if (!(f.n in FOOD_DENSITY_100)) FOOD_FIXED_KCAL[f.n] = f.k; });
 
+  // Porção padrão realista de cada alimento (pra não sugerir "100g" de whey ou azeite, por exemplo)
+  const FOOD_DEFAULT_QTY = {};
+  MEAL_PLAN.forEach(m => m.items.forEach(it => {
+    (it.subs||[]).forEach(s => { if (s.baseQty && !(s.n in FOOD_DEFAULT_QTY)) FOOD_DEFAULT_QTY[s.n] = s.baseQty; });
+  }));
+  MEAL_PLAN.forEach(m => m.items.forEach(it => { if (it.baseQty) FOOD_DEFAULT_QTY[it.n] = it.baseQty; }));
+
   const WEEKDAY_IDX = new Date().getDay(); // 0=domingo
   const TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][WEEKDAY_IDX];
   const todayISO = new Date().toISOString().slice(0,10);
@@ -1683,7 +1690,7 @@
       const density = FOOD_DENSITY_100[nomeInputEl.value];
       if (density !== undefined) {
         qtdInputEl.style.display = '';
-        if (!qtdInputEl.value) qtdInputEl.value = 100;
+        if (!qtdInputEl.value) qtdInputEl.value = FOOD_DEFAULT_QTY[nomeInputEl.value] || 100;
         const qtd = parseFloat(qtdInputEl.value) || 0;
         kcalInputEl.value = Math.round(density * qtd / 100);
       } else {
@@ -1762,7 +1769,7 @@
       const density = FOOD_DENSITY_100[nomeEl.value];
       if (density !== undefined) {
         qtdEl.style.display = '';
-        if (!qtdEl.value) qtdEl.value = 100;
+        if (!qtdEl.value) qtdEl.value = FOOD_DEFAULT_QTY[nomeEl.value] || 100;
         const qtd = parseFloat(qtdEl.value) || 0;
         kcalEl.value = Math.round(density * qtd / 100);
       } else {

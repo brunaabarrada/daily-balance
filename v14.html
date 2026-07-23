@@ -551,6 +551,27 @@
     return parseFloat(config.corridaBaseKm) || 1;
   }
 
+  function getAllRuns(){
+    const runs = [];
+    Object.keys(checkins).forEach(iso => {
+      const c = checkins[iso];
+      if (c && c.corrida && c.corrida.km) {
+        runs.push({ iso, km: parseFloat(c.corrida.km), min: c.corrida.min ? parseFloat(c.corrida.min) : null, conversa: !!c.corrida.conversa });
+      }
+    });
+    return runs.sort((a,b) => a.iso.localeCompare(b.iso));
+  }
+
+  function runHistoryStats(){
+    const runs = getAllRuns();
+    const totalKm = runs.reduce((s,r)=>s+r.km, 0);
+    const porMarco = RUN_GOALS.map(goal => ({
+      goal,
+      count: runs.filter(r => r.km >= goal && r.conversa).length
+    }));
+    return { runs, totalRuns: runs.length, totalKm, porMarco };
+  }
+
   function runProjection(){
     const longest = getLongestComfortableRun();
     return RUN_GOALS.map(goal => {
@@ -1440,17 +1461,36 @@
 
     const proj = runProjection();
     const longestRun = getLongestComfortableRun();
+    const hist = runHistoryStats();
     html += `<div class="meal-card">
       <div class="meal-head"><span class="meal-title">Metas de corrida</span><span class="meal-kcal">maior contínua: ${longestRun}km</span></div>
-      <ul class="ex-list">${proj.map(p => `<li>
+      <ul class="ex-list">${proj.map(p => {
+        const marco = hist.porMarco.find(m=>m.goal===p.goal);
+        const count = marco ? marco.count : 0;
+        return `<li>
           <span class="ex-name">${p.reached ? '✅' : '🏁'} ${p.goal}km</span>
-          <span class="ex-sets">${p.reached ? 'atingida' : `~${p.sessions} corrida${p.sessions===1?'':'s'} (~${p.weeks} sem.)`}</span>
-        </li>`).join('')}
+          <span class="ex-sets">${p.reached ? `atingida · ${count} corrida${count===1?'':'s'}` : `~${p.sessions} corrida${p.sessions===1?'':'s'} (~${p.weeks} sem.)`}</span>
+        </li>`;
+      }).join('')}
       </ul>
       <p class="hint" style="margin-top:8px;">Projeção pela regra dos 10%/semana (aumento seguro de distância), a partir da sua maior corrida feita com ritmo de conversa confortável. Registre km/tempo no dia de corrida pra essa projeção ficar cada vez mais precisa.</p>
       ${longestRun===parseFloat(config.corridaBaseKm||1) ? `<div class="config-row" style="margin-top:12px;">
         <div class="config-field"><label>Ainda sem corridas registradas — distância confortável atual</label><input type="number" step="0.1" id="fCorridaBase" value="${config.corridaBaseKm||''}" placeholder="ex: 1"> km</div>
       </div>` : ''}
+    </div>`;
+
+    html += `<div class="meal-card">
+      <div class="meal-head"><span class="meal-title">Histórico de corridas</span><span class="meal-kcal">${hist.totalRuns} corrida${hist.totalRuns===1?'':'s'} · ${hist.totalKm.toFixed(1)}km total</span></div>
+      ${hist.runs.length===0 ? '<p class="hint" style="margin:0;">Ainda sem corridas registradas.</p>' : `
+      <div class="entries">${hist.runs.slice(-10).reverse().map(r => {
+        const dstr = r.iso.slice(8,10)+'/'+r.iso.slice(5,7);
+        return `<div class="entry-row">
+          <span class="d">${dstr}</span>
+          <span class="entry-dot" style="background:${r.conversa?'var(--moss)':'var(--ochre)'}"></span>
+          <span>${r.km}km${r.min?' · '+r.min+'min':''}${!r.conversa?' · sem ritmo de conversa':''}</span>
+        </div>`;
+      }).join('')}</div>
+      <p class="hint" style="margin-top:8px;">Mostrando as últimas 10 corridas registradas, mais recente primeiro. O contador de metas acima só considera corridas com ritmo de conversa confortável.</p>`}
     </div>`;
 
     contentEl.innerHTML = html;

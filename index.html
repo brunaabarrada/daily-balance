@@ -437,7 +437,7 @@
         {n:'Morango', q:'87g', baseQty:87, unit:'g'},
         {n:'Mamão', q:'105g', baseQty:105, unit:'g'},
         {n:'Melancia', q:'140g', baseQty:140, unit:'g'},
-        {n:'Banana nanica', q:'46g', baseQty:46, unit:'g'},
+        {n:'Banana prata', q:'43g', baseQty:43, unit:'g'},
         {n:'Kiwi', q:'82g', baseQty:82, unit:'g'},
         {n:'Laranja', q:'93g', baseQty:93, unit:'g'}
       ]},
@@ -453,7 +453,7 @@
       { id:'pos-1', n:'Leite de vaca sem lactose', q:'200ml', k:128, baseQty:200, unit:'ml', subs:[
         {n:'Leite integral comum', q:'210ml', baseQty:210, unit:'ml'}
       ]},
-      { id:'pos-2', n:'Banana nanica', q:'120g', k:110, baseQty:120, unit:'g', subs:[
+      { id:'pos-2', n:'Banana prata', q:'112g', k:110, baseQty:112, unit:'g', subs:[
         {n:'Manga', q:'183g', baseQty:183, unit:'g'},
         {n:'Uva Rubi ou Itália', q:'208g', baseQty:208, unit:'g'}
       ]},
@@ -632,6 +632,11 @@
     {n:'Café com leite', u:'1 xícara', k:40},
     {n:'Salada verde', u:'à vontade', k:15}
   ];
+
+  const ALL_FOOD_NAMES = Array.from(new Set([
+    ...FOOD_DB.map(f=>f.n),
+    ...MEAL_PLAN.flatMap(m=>m.items.flatMap(it=>[it.n, ...(it.subs||[]).map(s=>s.n)]))
+  ])).sort();
 
   const WEEKDAY_IDX = new Date().getDay(); // 0=domingo
   const TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][WEEKDAY_IDX];
@@ -1390,7 +1395,8 @@
     const rangeLabel = panelRange === 'mes' ? 'este mês' : '7 dias';
     const monthName = new Date().toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
 
-    let html = `<div class="card-head"><div>
+    let html = `<datalist id="foodSuggestions">${ALL_FOOD_NAMES.map(n=>`<option value="${n}">`).join('')}</datalist>`;
+    html += `<div class="card-head"><div>
       <p class="card-eyebrow">${panelRange==='mes' ? monthName : 'Últimos 7 dias'}</p>
       <h2 class="card-title">Painel</h2>
       <p class="card-focus">Poucos números, sem cobrança. Marque o que fizer sentido hoje.</p>
@@ -1594,7 +1600,7 @@
       </div>
       <p class="hint" style="margin-top:10px;">Comeu mais ou menos que o previsto (previsto ou substituto)? Ajuste o número ao lado do alimento — a kcal recalcula sozinha.</p>
       <div class="custom-add" style="margin-top:10px;">
-        <input type="text" class="iname" id="fMealExtraNome-${m.key}" placeholder="outro alimento fora da lista...">
+        <input type="text" class="iname" id="fMealExtraNome-${m.key}" list="foodSuggestions" placeholder="outro alimento fora da lista...">
         <input type="number" class="ikcal" id="fMealExtraKcal-${m.key}" placeholder="kcal">
         <button class="btnAddMealExtra" data-meal="${m.key}">adicionar</button>
       </div>
@@ -1675,7 +1681,7 @@
         </div>`).join('') || '<p class="hint" style="margin:0;">Nada fora do plano hoje.</p>'}
       </div>
       <div class="custom-add">
-        <input type="text" class="iname" placeholder="outro alimento...">
+        <input type="text" class="iname" list="foodSuggestions" placeholder="outro alimento...">
         <input type="number" class="ikcal" placeholder="kcal">
         <button class="btnAddCustom">adicionar</button>
       </div>

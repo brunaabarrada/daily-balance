@@ -660,9 +660,19 @@
   }));
   MEAL_PLAN.forEach(m => m.items.forEach(it => { if (it.baseQty) FOOD_DEFAULT_QTY[it.n] = it.baseQty; }));
 
-  const WEEKDAY_IDX = new Date().getDay(); // 0=domingo
-  const TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][WEEKDAY_IDX];
-  const todayISO = new Date().toISOString().slice(0,10);
+  function localISO(date){
+    const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  let TODAY_KEY, todayISO;
+  function refreshToday(){
+    const now = new Date();
+    todayISO = localISO(now);
+    TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][now.getDay()];
+  }
+  refreshToday();
+
   const DAY_KEY_ORDER = ['seg','ter','qua','qui','sex','sab','dom']; // segunda-first, alinhado ao DIAS
 
   function getDateForDayKey(dayKey){
@@ -672,7 +682,7 @@
     const mondayOffset = (nowDow===0) ? -6 : 1-nowDow;
     const monday = new Date(now); monday.setDate(now.getDate()+mondayOffset);
     const target = new Date(monday); target.setDate(monday.getDate()+idx);
-    return target.toISOString().slice(0,10);
+    return localISO(target);
   }
 
   let statusMap = {};
@@ -1823,6 +1833,7 @@
   }
 
   function render(){
+    refreshToday();
     renderTrail();
     document.getElementById('tabPlano').classList.toggle('active', currentTab==='plano');
     document.getElementById('tabPainel').classList.toggle('active', currentTab==='painel');
@@ -1846,6 +1857,18 @@
   document.getElementById('tabPlano').onclick = () => { currentTab='plano'; currentDayKey = TODAY_KEY; render(); };
   document.getElementById('tabPainel').onclick = () => { currentTab='painel'; render(); };
   document.getElementById('tabDash').onclick = () => { currentTab='dash'; render(); };
+
+  // Se o app voltar de segundo plano (celular bloqueado, troca de app) num dia diferente, atualiza sozinho
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      const wasToday = todayISO;
+      refreshToday();
+      if (todayISO !== wasToday) {
+        currentDayKey = TODAY_KEY;
+      }
+      render();
+    }
+  });
 
   loadAll();
 })();

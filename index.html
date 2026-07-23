@@ -895,7 +895,7 @@
     const dayData = editable ? getDay(dateForDay) : null;
     let html = `<div class="card-head">
       <div>
-        <p class="card-eyebrow">${d.label}${isToday ? ' · hoje' : ''}</p>
+        <p class="card-eyebrow">${d.label}${isToday ? ' · hoje' : ''} <span style="opacity:0.5;">(app calcula: ${dateForDay})</span></p>
         <h2 class="card-title">${d.title}</h2>
         <p class="card-focus">${d.focus}</p>
       </div>

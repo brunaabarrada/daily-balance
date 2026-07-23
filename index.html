@@ -1616,7 +1616,8 @@
       <p class="hint" style="margin-top:8px;">Meta calórica recalculada para seu peso atual (47,5kg, ~2,3g/kg proteína) · Água: 25–50 ml/kg/dia → ${waterMinL}–${waterMaxL} L para ${latestWeight}kg</p>
     </details>`;
 
-    html += `<p class="group-label">Registro de hoje</p>
+    html += `<p class="group-label">Registro de hoje <span style="font-weight:400; text-transform:none; letter-spacing:0; color:var(--teal);">— ${DIAS.find(x=>x.key===TODAY_KEY).label}, ${todayISO.slice(8,10)}/${todayISO.slice(5,7)}</span></p>
+    <p class="hint" style="margin-top:-4px; margin-bottom:14px;">Esta aba sempre mostra o dia de hoje — navegar pelos dias da semana na aba "Treino e Humor" não muda o que aparece aqui.</p>
     <div class="form-grid">
       <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="fPeso" value="${today.peso||''}" placeholder="ex: 48.2"></div>
       <div class="field"><label>Sono (horas)</label><input type="number" step="0.5" min="0" max="14" id="fSono" value="${today.sono||''}" placeholder="ex: 7.5"></div>

@@ -638,6 +638,13 @@
     ...MEAL_PLAN.flatMap(m=>m.items.flatMap(it=>[it.n, ...(it.subs||[]).map(s=>s.n)]))
   ])).sort();
 
+  const ALL_FOOD_KCAL = {};
+  FOOD_DB.forEach(f => { ALL_FOOD_KCAL[f.n] = f.k; });
+  MEAL_PLAN.forEach(m => m.items.forEach(it => {
+    if (!(it.n in ALL_FOOD_KCAL)) ALL_FOOD_KCAL[it.n] = it.k;
+    (it.subs||[]).forEach(s => { if (!(s.n in ALL_FOOD_KCAL)) ALL_FOOD_KCAL[s.n] = it.k; });
+  }));
+
   const WEEKDAY_IDX = new Date().getDay(); // 0=domingo
   const TODAY_KEY = ['dom','seg','ter','qua','qui','sex','sab'][WEEKDAY_IDX];
   const todayISO = new Date().toISOString().slice(0,10);
@@ -1659,6 +1666,14 @@
       };
     });
     const btnAdd = card.querySelector('.btnAddMealExtra');
+    const nomeInputEl = document.getElementById('fMealExtraNome-'+m.key);
+    if (nomeInputEl) nomeInputEl.addEventListener('input', (e) => {
+      const match = ALL_FOOD_KCAL[e.target.value];
+      if (match !== undefined) {
+        const kcalInput = document.getElementById('fMealExtraKcal-'+m.key);
+        if (kcalInput) kcalInput.value = match;
+      }
+    });
     if (btnAdd) btnAdd.onclick = async () => {
       const nomeInput = document.getElementById('fMealExtraNome-'+m.key);
       const kcalInput = document.getElementById('fMealExtraKcal-'+m.key);
@@ -1715,6 +1730,10 @@
         toast();
         render();
       };
+    });
+    card.querySelector('.iname').addEventListener('input', (e) => {
+      const match = ALL_FOOD_KCAL[e.target.value];
+      if (match !== undefined) card.querySelector('.ikcal').value = match;
     });
     card.querySelector('.btnAddCustom').onclick = async () => {
       const nameInput = card.querySelector('.iname');

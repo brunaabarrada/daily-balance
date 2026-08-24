@@ -377,8 +377,7 @@
       ],
       complementares:[
         {n:'Hack Squat', s:'3×10–12'},
-        {n:'V Squat', s:'3×10–12'},
-        {n:'Elevação Pélvica (Hip Thrust)', s:'3×12'}
+        {n:'V Squat', s:'3×10–12'}
       ]
     },
     { key:'ter', label:'Ter', title:'Peito, Ombro & Tríceps', focus:'Treino Superior A · Push', type:'treino', cardio:'Cardio leve 15–20 min (esteira ou elíptico, ritmo de conversa)',
@@ -449,6 +448,11 @@
     { n:'Abdominal infra no banco inclinado', s:'3×15', subs:[{n:'Abdominal na bola (costas na bola, eleva pernas)', s:'3×15'}] },
     { n:'Prancha ventral tirando uma perna', s:'3×20seg/perna · desc. 2min' }
   ];
+
+  // Duplas por dia — cada exercício aparece ~2x/semana, mas o circuito do dia fica curto (2 itens)
+  const AB_ROTATION = {
+    seg: [0,1], ter: [2,3], qua: [4,0], qui: [1,2], sex: [3,4], dom: [0,1]
+  };
 
   const STATUS_NOTE = {
     verde: 'Energia boa hoje — vale o treino completo.',
@@ -1114,9 +1118,10 @@
           html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${activeTpl.complementares.length}</span>` : ''}</p>`;
           html += exList(activeTpl.complementares, 'c');
 
-          const abDone = editable ? CIRCUITO_ABDOMINAL.filter((ex,i)=> getExState(dayData,'ab'+i).done).length : 0;
-          html += `<p class="group-label"><span>Circuito abdominal</span>${editable ? `<span>${abDone}/${CIRCUITO_ABDOMINAL.length}</span>` : ''}</p>`;
-          html += exList(CIRCUITO_ABDOMINAL, 'ab');
+          const abPair = (AB_ROTATION[d.key] || [0,1]).map(i => CIRCUITO_ABDOMINAL[i]);
+          const abDone = editable ? abPair.filter((ex,i)=> getExState(dayData,'ab'+i).done).length : 0;
+          html += `<p class="group-label"><span>Circuito abdominal</span>${editable ? `<span>${abDone}/${abPair.length}</span>` : ''}</p>`;
+          html += exList(abPair, 'ab');
         }
         if (activeTpl.cardio) html += `<div class="cardio-tag">🏃 ${activeTpl.cardio}</div>`;
       }

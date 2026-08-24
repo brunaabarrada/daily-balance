@@ -429,10 +429,10 @@
   const TREINO_TEMPLATES = DIAS.filter(x => x.type === 'treino');
 
   const CIRCUITO_ABDOMINAL = [
-    { n:'Abdominal parcial no solo', s:'3×15' },
+    { n:'Abdominal parcial no solo', s:'3×15', subs:[{n:'Abdominal na máquina sentado', s:'3×15'}] },
     { n:'Abdominal perna cruzada unilateral', s:'3×10+10' },
     { n:'Abdominal remador no solo', s:'3×15' },
-    { n:'Abdominal infra no banco inclinado', s:'3×15' },
+    { n:'Abdominal infra no banco inclinado', s:'3×15', subs:[{n:'Abdominal na bola (costas na bola, eleva pernas)', s:'3×15'}] },
     { n:'Prancha ventral tirando uma perna', s:'3×20seg/perna · desc. 2min' }
   ];
 
@@ -821,9 +821,9 @@
 
   function getExState(d, exId){
     const raw = d.exercicios[exId];
-    if (raw && typeof raw === 'object') return raw;
-    if (typeof raw === 'boolean') return { done: raw, carga: null };
-    return { done: false, carga: null };
+    if (raw && typeof raw === 'object') return { sel:0, ...raw };
+    if (typeof raw === 'boolean') return { done: raw, carga: null, sel: 0 };
+    return { done: false, carga: null, sel: 0 };
   }
 
   const MOOD_SCALE = [
@@ -1011,15 +1011,23 @@
     function exList(list, prefix){
       return `<ul class="ex-list">${list.map((ex,i)=>{
         const exId = prefix+i;
-        const state = editable ? getExState(dayData, exId) : { done:false, carga:null };
+        const state = editable ? getExState(dayData, exId) : { done:false, carga:null, sel:0 };
+        const hasSubs = ex.subs && ex.subs.length;
+        const active = (hasSubs && state.sel > 0) ? ex.subs[state.sel-1] : ex;
+        const nameHtml = hasSubs
+          ? `<select class="ex-sel" data-id="${exId}" style="font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid var(--line); border-radius:6px; padding:3px 5px; background:var(--paper); ${state.done?'text-decoration:line-through; color:var(--ink-soft);':''}">
+               <option value="0" ${state.sel===0?'selected':''}>${ex.n}</option>
+               ${ex.subs.map((s,si)=>`<option value="${si+1}" ${state.sel===si+1?'selected':''}>${s.n}</option>`).join('')}
+             </select>`
+          : `<span style="${state.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${ex.n}</span>`;
         return `<li style="flex-wrap:wrap;">
-          <span class="ex-name" style="display:flex; align-items:center; gap:8px;">
+          <span class="ex-name" style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
             ${editable ? `<input type="checkbox" class="ex-chk" data-id="${exId}" ${state.done?'checked':''}>` : ''}
-            <span style="${state.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${ex.n}</span>
+            ${nameHtml}
           </span>
           <span style="display:flex; align-items:center; gap:8px;">
             ${editable && state.done ? `<input type="number" class="ex-carga" data-id="${exId}" value="${state.carga||''}" placeholder="kg" style="width:56px; font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--paper);">` : ''}
-            <span class="ex-sets">${ex.s}</span>
+            <span class="ex-sets">${active.s}</span>
           </span>
         </li>`;
       }).join('')}</ul>`;
@@ -1165,6 +1173,16 @@
             dayData.exercicios[inp.dataset.id] = state;
             await saveDay(dateForDay);
             toast();
+          };
+        });
+        contentEl.querySelectorAll('.ex-sel').forEach(sel => {
+          sel.onchange = async (e) => {
+            const state = getExState(dayData, sel.dataset.id);
+            state.sel = parseInt(e.target.value);
+            dayData.exercicios[sel.dataset.id] = state;
+            await saveDay(dateForDay);
+            toast();
+            render();
           };
         });
         const fTreinoAlt = document.getElementById('fTreinoAlt');

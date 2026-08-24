@@ -428,6 +428,14 @@
 
   const TREINO_TEMPLATES = DIAS.filter(x => x.type === 'treino');
 
+  const CIRCUITO_ABDOMINAL = [
+    { n:'Abdominal parcial no solo', s:'3×15' },
+    { n:'Abdominal perna cruzada unilateral', s:'3×10+10' },
+    { n:'Abdominal remador no solo', s:'3×15' },
+    { n:'Abdominal infra no banco inclinado', s:'3×15' },
+    { n:'Prancha ventral tirando uma perna', s:'3×20seg/perna · desc. 2min' }
+  ];
+
   const STATUS_NOTE = {
     verde: 'Energia boa hoje — vale o treino completo.',
     amarelo: 'Faça só os essenciais, reduza uma série se precisar. Já é suficiente.',
@@ -1083,6 +1091,10 @@
           const compDone = editable ? activeTpl.complementares.filter((ex,i)=> getExState(dayData,'c'+i).done).length : 0;
           html += `<p class="group-label"><span>Complementares</span>${editable ? `<span>${compDone}/${activeTpl.complementares.length}</span>` : ''}</p>`;
           html += exList(activeTpl.complementares, 'c');
+
+          const abDone = editable ? CIRCUITO_ABDOMINAL.filter((ex,i)=> getExState(dayData,'ab'+i).done).length : 0;
+          html += `<p class="group-label"><span>Circuito abdominal</span>${editable ? `<span>${abDone}/${CIRCUITO_ABDOMINAL.length}</span>` : ''}</p>`;
+          html += exList(CIRCUITO_ABDOMINAL, 'ab');
         }
         if (activeTpl.cardio) html += `<div class="cardio-tag">🏃 ${activeTpl.cardio}</div>`;
       }

@@ -700,6 +700,7 @@
     {n:'Aveia em flocos', k100:394, p:14, unit:'colher de sopa', unitG:15},
     {n:'Granola', k100:490, p:9, unit:'colher de sopa', unitG:10},
     {n:'Pão de forma integral', k100:253, p:9, unit:'fatia', unitG:25},
+    {n:'Pão integral com mel', k100:265, p:7.1, unit:'fatia', unitG:32},
     {n:'Pão de forma tradicional', k100:253, p:8, unit:'fatia', unitG:25},
     {n:'Pão francês', k100:300, p:8, unit:'unidade', unitG:50},
     {n:'Pão de queijo', k100:290, p:5, unit:'unidade média', unitG:35},
@@ -821,7 +822,10 @@
 
   let statusMap = {};
   let checkins = {};
-  let config = { calorieGoal: '', waterGoalBottles: '3', corridaBaseKm: '', cycleLastStart: '', cycleLength: '28' };
+  // Estado da busca de alimento (qual refeição está com a busca aberta)
+  let openSearchMeal = null;
+  let searchQuery = '';
+  let config = { calorieGoal: '', protGoal: '', waterGoalBottles: '3', corridaBaseKm: '', cycleLastStart: '', cycleLength: '28' };
   let currentTab = 'plano';
   let panelRange = '7d'; // '7d' | 'mes'
   let currentDayKey = TODAY_KEY;
@@ -978,7 +982,7 @@
       btn.innerHTML = `<span class="dot${st ? ' status-'+st : ''}">${d.type==='descanso' ? '·' : (d.type==='corrida' ? '↝' : '')}</span>
         <span class="label">${d.label}</span>
         ${d.key===TODAY_KEY ? '<span class="today-mark">hoje</span>' : ''}`;
-      btn.onclick = () => { currentDayKey = d.key; render(); };
+      btn.onclick = () => { currentDayKey = d.key; openSearchMeal = null; searchQuery = ''; render(); };
       row.appendChild(btn);
     });
   }
@@ -1624,6 +1628,7 @@
       <summary>Ajustar metas (calorias e água)</summary>
       <div class="config-row" style="margin-top:10px;">
         <div class="config-field"><label>Meta calórica diária</label><input type="number" id="fGoalKcal" value="${config.calorieGoal||DEFAULT_KCAL_GOAL}" placeholder="1760"> kcal</div>
+        <div class="config-field"><label>Meta de proteína diária</label><input type="number" id="fGoalProt" value="${config.protGoal||DEFAULT_PROT_GOAL}" placeholder="109"> g</div>
         <div class="config-field"><label>Meta de água</label><input type="number" id="fGoalWater" value="${config.waterGoalBottles||''}" placeholder="3"> garrafinhas (800ml)</div>
       </div>
       <p class="hint" style="margin-top:8px;">Meta calórica recalculada para seu peso atual (47,5kg, ~2,3g/kg proteína) · Água: 25–50 ml/kg/dia → ${waterMinL}–${waterMaxL} L para ${latestWeight}kg</p>
@@ -1718,6 +1723,7 @@
     renderEntries(dates);
 
     document.getElementById('fGoalKcal').onchange = async (e) => { config.calorieGoal = e.target.value; await saveConfig(); toast(); render(); };
+    document.getElementById('fGoalProt').onchange = async (e) => { config.protGoal = e.target.value; await saveConfig(); toast(); render(); };
     document.getElementById('fGoalWater').onchange = async (e) => { config.waterGoalBottles = e.target.value; await saveConfig(); toast(); render(); };
 
     document.getElementById('btnReset').onclick = async () => {
@@ -1729,7 +1735,7 @@
         if (l2 && l2.keys) for (const k of l2.keys) { try { await storage.delete(k, false); } catch(e){} }
         try { await storage.delete('config', false); } catch(e){}
       } catch(e){}
-      statusMap = {}; checkins = {}; config = { calorieGoal:'', waterGoalBottles:'3', corridaBaseKm:'', cycleLastStart:'', cycleLength:'28' };
+      statusMap = {}; checkins = {}; config = { calorieGoal:'', protGoal:'', waterGoalBottles:'3', corridaBaseKm:'', cycleLastStart:'', cycleLength:'28' };
       render();
     };
   }
@@ -1754,10 +1760,6 @@
     }
     document.getElementById('waterTotal').textContent = (count*0.8).toFixed(1) + ' L nesse dia (garrafinha de 800ml)';
   }
-
-  // Estado da busca aberta (qual refeição está adicionando alimento)
-  let openSearchMeal = null;
-  let searchQuery = '';
 
   function renderMealCard(m, today, dateForSave){
     const wrap = document.getElementById('mealsWrap');
@@ -1949,11 +1951,12 @@
       const dotColor = st==='verde' ? 'var(--moss)' : st==='amarelo' ? 'var(--ochre)' : st==='vermelho' ? 'var(--brick)' : 'var(--line)';
       const dstr = iso.slice(8,10)+'/'+iso.slice(5,7);
       const kc = dayTotalKcal(c);
+      const pr = dayTotalProt(c);
       const wl = c.water ? (c.water.count*0.8).toFixed(1) : '0.0';
       return `<div class="entry-row">
         <span class="d">${dstr}</span>
         <span class="entry-dot" style="background:${dotColor}"></span>
-        <span>${c.peso? c.peso+'kg · ':''}${c.sono? c.sono+'h sono · ':''}${c.energia? 'energia '+c.energia+' · ':''}${kc>0? kc+'kcal · ':''}${wl}L${c.dores? ' · '+c.dores : ''}</span>
+        <span>${c.peso? c.peso+'kg · ':''}${c.sono? c.sono+'h sono · ':''}${c.energia? 'energia '+c.energia+' · ':''}${kc>0? kc+'kcal · ':''}${pr>0? pr.toFixed(0)+'g prot · ':''}${wl}L${c.dores? ' · '+c.dores : ''}</span>
       </div>`;
     }).join('');
   }
@@ -1980,9 +1983,9 @@
     }
   }
 
-  document.getElementById('tabPlano').onclick = () => { currentTab='plano'; render(); };
-  document.getElementById('tabPainel').onclick = () => { currentTab='painel'; render(); };
-  document.getElementById('tabDash').onclick = () => { currentTab='dash'; render(); };
+  document.getElementById('tabPlano').onclick = () => { currentTab='plano'; openSearchMeal = null; searchQuery = ''; render(); };
+  document.getElementById('tabPainel').onclick = () => { currentTab='painel'; openSearchMeal = null; searchQuery = ''; render(); };
+  document.getElementById('tabDash').onclick = () => { currentTab='dash'; openSearchMeal = null; searchQuery = ''; render(); };
 
   // Se o app voltar de segundo plano (celular bloqueado, troca de app) num dia diferente, atualiza sozinho
   document.addEventListener('visibilitychange', () => {

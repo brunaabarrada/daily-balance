@@ -735,6 +735,7 @@
     {n:'Brócolis cozido', k100:30, p:2.8, unit:'porção', unitG:100},
     {n:'Cenoura crua', k100:34, p:0.9, unit:'unidade média', unitG:80},
     {n:'Vegetais (à vontade)', k100:25, p:1.5, unit:'porção', unitG:100},
+    {n:'Sopa de legumes', k100:45, p:2, unit:'prato', unitG:300},
 
     // ── Bebidas
     {n:'Suco integral de uva', k100:61, p:0.4, unit:'copo', unitG:200},
@@ -1766,6 +1767,22 @@
     document.getElementById('waterTotal').textContent = (count*0.8).toFixed(1) + ' L nesse dia (garrafinha de 800ml)';
   }
 
+
+  // Sugestões iniciais por refeição (quando a busca está vazia) — o que faz sentido em cada momento do dia
+  const MEAL_SUGGESTIONS = {
+    pre: ['Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café com leite','Aveia em flocos'],
+    cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão de forma integral','Pão integral com mel','Iogurte natural','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
+    pos: ['Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim','Iogurte grego natural'],
+    almoco: ['Frango desfiado','Frango grelhado','Carne moída (patinho)','Arroz branco cozido','Feijão cozido','Salada verde','Batata doce cozida','Azeite extra virgem','Brócolis cozido','Macarrão cozido'],
+    lanche: ['Iogurte natural','Granola','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim','Queijo minas frescal','Whey Protein'],
+    jantar: ['Carne moída (patinho)','Frango desfiado','Macarrão integral cozido','Arroz branco cozido','Salada verde','Tilápia grelhada','Batata doce cozida','Ovo cozido','Sopa de legumes','Peixe grelhado']
+  };
+  function defaultSuggestions(mealKey){
+    const nomes = MEAL_SUGGESTIONS[mealKey] || [];
+    const list = nomes.map(n => FOOD_BY_NAME[n]).filter(Boolean);
+    return list.length ? list : FOOD_DB.slice(0,10);
+  }
+
   function renderMealCard(m, today, dateForSave){
     const wrap = document.getElementById('mealsWrap');
     const entries = today.meals[m.key] || [];
@@ -1777,7 +1794,7 @@
     const isSearchOpen = openSearchMeal === m.key;
     const q = normalize(searchQuery.trim());
     const results = isSearchOpen
-      ? (q ? FOOD_DB.filter(f => normalize(f.n).includes(q)).slice(0,12) : FOOD_DB.slice(0,10))
+      ? (q ? FOOD_DB.filter(f => normalize(f.n).includes(q)).slice(0,12) : defaultSuggestions(m.key))
       : [];
 
     card.innerHTML = `
@@ -1836,7 +1853,7 @@
       searchInput.oninput = (e) => {
         searchQuery = e.target.value;
         const qq = normalize(searchQuery.trim());
-        const res = qq ? FOOD_DB.filter(f => normalize(f.n).includes(qq)).slice(0,12) : FOOD_DB.slice(0,10);
+        const res = qq ? FOOD_DB.filter(f => normalize(f.n).includes(qq)).slice(0,12) : defaultSuggestions(m.key);
         const box = card.querySelector('.food-results');
         box.innerHTML = res.length ? res.map(f=>`
           <button class="food-result" data-meal="${m.key}" data-food="${f.n.replace(/"/g,'&quot;')}">

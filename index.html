@@ -1783,6 +1783,30 @@
     return list.length ? list : FOOD_DB.slice(0,10);
   }
 
+  // Pluraliza a unidade caseira corretamente em português
+  // (ex: "colher de sopa" -> "colheres de sopa", "filé médio" -> "filés médios")
+  function pluralUnit(unit, qty){
+    if (qty === 1) return unit;
+    const irregulares = {
+      'colher de sopa':'colheres de sopa',
+      'colher de chá':'colheres de chá',
+      'pão':'pães'
+    };
+    if (irregulares[unit]) return irregulares[unit];
+    // pluraliza cada palavra antes de uma preposição ("filé médio" -> "filés médios")
+    const partes = unit.split(' de ');
+    const pluralizaPalavra = p => {
+      if (/[aeiou]$/.test(p)) return p + 's';
+      if (/[rz]$/.test(p)) return p + 'es';
+      if (/m$/.test(p)) return p.slice(0,-1) + 'ns';
+      if (/l$/.test(p)) return p.slice(0,-1) + 'is';
+      if (/s$/.test(p)) return p;
+      return p + 's';
+    };
+    partes[0] = partes[0].split(' ').map(pluralizaPalavra).join(' ');
+    return partes.join(' de ');
+  }
+
   function renderMealCard(m, today, dateForSave){
     const wrap = document.getElementById('mealsWrap');
     const entries = today.meals[m.key] || [];
@@ -1807,7 +1831,7 @@
         const f = FOOD_BY_NAME[e.n];
         const g = Math.round(toGrams(e));
         const qtyLabel = e.mode === 'un'
-          ? `${e.qty} ${f ? f.unit + (e.qty>1?'s':'') : 'un'} <span class="conv">(${g}g)</span>`
+          ? `${e.qty} ${f ? pluralUnit(f.unit, e.qty) : 'un'} <span class="conv">(${g}g)</span>`
           : `${g}g`;
         return `<div class="food-row">
           <div class="food-main">
@@ -1916,7 +1940,7 @@
         <div class="qty-row">
           <input type="number" step="any" min="0" id="qtyValue" value="${e.qty}">
           <select id="qtyMode">
-            <option value="un" ${e.mode==='un'?'selected':''}>${f.unit}(s)</option>
+            <option value="un" ${e.mode==='un'?'selected':''}>${f.unit} / ${pluralUnit(f.unit,2)}</option>
             <option value="g" ${e.mode==='g'?'selected':''}>gramas</option>
           </select>
         </div>

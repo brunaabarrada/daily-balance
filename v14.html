@@ -775,6 +775,11 @@
     { key:'jantar', label:'Jantar' }
   ];
 
+  // Remove acentos para a busca funcionar com "pao", "acai", "protein" etc.
+  function normalize(s){
+    return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
+
   const FOOD_BY_NAME = {};
   FOOD_DB.forEach(f => { FOOD_BY_NAME[f.n] = f; });
 
@@ -1770,9 +1775,9 @@
     card.className = 'meal-card';
 
     const isSearchOpen = openSearchMeal === m.key;
-    const q = searchQuery.trim().toLowerCase();
+    const q = normalize(searchQuery.trim());
     const results = isSearchOpen
-      ? (q ? FOOD_DB.filter(f => f.n.toLowerCase().includes(q)).slice(0,12) : FOOD_DB.slice(0,10))
+      ? (q ? FOOD_DB.filter(f => normalize(f.n).includes(q)).slice(0,12) : FOOD_DB.slice(0,10))
       : [];
 
     card.innerHTML = `
@@ -1830,8 +1835,8 @@
     if (searchInput) {
       searchInput.oninput = (e) => {
         searchQuery = e.target.value;
-        const qq = searchQuery.trim().toLowerCase();
-        const res = qq ? FOOD_DB.filter(f => f.n.toLowerCase().includes(qq)).slice(0,12) : FOOD_DB.slice(0,10);
+        const qq = normalize(searchQuery.trim());
+        const res = qq ? FOOD_DB.filter(f => normalize(f.n).includes(qq)).slice(0,12) : FOOD_DB.slice(0,10);
         const box = card.querySelector('.food-results');
         box.innerHTML = res.length ? res.map(f=>`
           <button class="food-result" data-meal="${m.key}" data-food="${f.n.replace(/"/g,'&quot;')}">
@@ -1892,7 +1897,7 @@
         <p class="qty-sub">${f.k100} kcal · ${f.p}g proteína <span class="fr-per">por 100g</span></p>
 
         <div class="qty-row">
-          <input type="number" step="any" id="qtyValue" value="${e.qty}">
+          <input type="number" step="any" min="0" id="qtyValue" value="${e.qty}">
           <select id="qtyMode">
             <option value="un" ${e.mode==='un'?'selected':''}>${f.unit}(s)</option>
             <option value="g" ${e.mode==='g'?'selected':''}>gramas</option>
@@ -1912,7 +1917,7 @@
     const prevEl = overlay.querySelector('#qtyPreview');
 
     function updatePreview(){
-      const tmp = { n: e.n, qty: parseFloat(valEl.value)||0, mode: modeEl.value };
+      const tmp = { n: e.n, qty: Math.max(0, parseFloat(valEl.value)||0), mode: modeEl.value };
       const g = Math.round(toGrams(tmp));
       prevEl.innerHTML = `<strong>${g}g</strong> na balança → <strong>${entryKcal(tmp)} kcal</strong> · <strong>${entryProt(tmp).toFixed(1)}g</strong> de proteína`;
     }
@@ -1920,7 +1925,7 @@
     valEl.oninput = updatePreview;
     modeEl.onchange = () => {
       // ao trocar de modo, converte o valor pra manter a mesma quantidade real
-      const cur = { n: e.n, qty: parseFloat(valEl.value)||0, mode: modeEl.value==='g' ? 'un' : 'g' };
+      const cur = { n: e.n, qty: Math.max(0, parseFloat(valEl.value)||0), mode: modeEl.value==='g' ? 'un' : 'g' };
       const grams = toGrams(cur);
       valEl.value = modeEl.value === 'g' ? Math.round(grams) : +(grams / f.unitG).toFixed(1);
       updatePreview();
@@ -1929,7 +1934,7 @@
     overlay.querySelector('.qty-cancel').onclick = () => overlay.remove();
     overlay.onclick = (ev) => { if (ev.target === overlay) overlay.remove(); };
     overlay.querySelector('.qty-save').onclick = async () => {
-      e.qty = parseFloat(valEl.value) || 0;
+      e.qty = Math.max(0, parseFloat(valEl.value) || 0);
       e.mode = modeEl.value;
       overlay.remove();
       await saveDay(dateForSave);

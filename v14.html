@@ -253,6 +253,71 @@
   .qty-box{ display:flex; align-items:center; gap:4px; font-size:12px; color:var(--ink-soft); white-space:nowrap; }
   .plan-qty{ width:52px; font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:5px 6px; background:var(--paper); box-sizing:border-box; }
   .qty-unit{ font-size:12px; color:var(--ink-soft); }
+  /* ── Resumo de macros do dia ── */
+  .macro-summary{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:10px 0 20px; }
+  .macro-item{ background:var(--paper-2); border-radius:12px; padding:13px 15px; }
+  .macro-num{ font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; line-height:1.1; }
+  .macro-goal{ font-size:13px; font-weight:400; color:var(--ink-soft); }
+  .macro-lbl{ font-size:10.5px; color:var(--ink-soft); margin:3px 0 8px; line-height:1.3; }
+  .macro-summary .kcal-progress-bar{ height:6px; border-radius:4px; background:rgba(43,42,36,0.10); overflow:hidden; }
+
+  /* ── Item de alimento registrado ── */
+  .food-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px dashed var(--line); }
+  .food-row:last-child{ border-bottom:none; }
+  .food-main{ flex:1; min-width:0; cursor:pointer; }
+  .food-name{ display:block; font-size:14px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .food-qty{ display:block; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .food-qty .conv{ opacity:.65; }
+  .food-macros{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; flex-shrink:0; }
+  .food-kcal{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:var(--teal); }
+  .food-prot{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ochre); }
+  .macro-unit{ font-size:9.5px; opacity:.7; margin-left:2px; }
+
+  /* ── Botão e busca de alimento ── */
+  .add-food-btn{
+    width:100%; margin-top:6px; padding:11px; border-radius:10px;
+    border:1px dashed var(--line); background:transparent; color:var(--ink-soft);
+    font-family:'Inter',sans-serif; font-size:13.5px; cursor:pointer;
+  }
+  .add-food-btn:hover{ border-color:var(--teal); color:var(--teal); }
+  .food-search{ margin-top:8px; }
+  .food-search-input{
+    width:100%; box-sizing:border-box; padding:10px 12px; border-radius:9px;
+    border:1.5px solid var(--teal); background:#fff; font-family:'Inter',sans-serif;
+  }
+  .food-results{ max-height:230px; overflow-y:auto; margin-top:6px; }
+  .food-result{
+    display:block; width:100%; text-align:left; padding:9px 10px; margin-bottom:4px;
+    border:1px solid var(--line); border-radius:8px; background:var(--paper); cursor:pointer;
+  }
+  .food-result:hover{ border-color:var(--teal); }
+  .fr-name{ display:block; font-size:13.5px; font-weight:600; color:var(--ink); }
+  .fr-info{ display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); margin-top:1px; }
+  .fr-per{ opacity:.6; }
+  .search-cancel{
+    width:100%; margin-top:4px; padding:8px; border:none; background:transparent;
+    color:var(--ink-soft); font-family:'Inter',sans-serif; font-size:12.5px; cursor:pointer; text-decoration:underline;
+  }
+
+  /* ── Editor de quantidade ── */
+  .qty-overlay{
+    position:fixed; inset:0; background:rgba(43,42,36,0.45); z-index:100;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .qty-panel{ background:#fff; border-radius:16px; padding:22px; width:100%; max-width:360px; box-shadow:0 8px 30px rgba(0,0,0,.2); }
+  .qty-title{ font-family:'Fraunces',serif; font-size:18px; font-weight:600; margin:0 0 3px; }
+  .qty-sub{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); margin:0 0 16px; }
+  .qty-row{ display:flex; gap:8px; }
+  .qty-row input{ flex:1; min-width:0; padding:11px; border:1px solid var(--line); border-radius:9px; background:var(--paper); font-family:'IBM Plex Mono',monospace; }
+  .qty-row select{ flex:1.2; min-width:0; padding:11px 8px; border:1px solid var(--line); border-radius:9px; background:var(--paper); }
+  .qty-hint{ font-size:12.5px; color:var(--ink-soft); margin:12px 0 0; line-height:1.5; }
+  .qty-actions{ display:flex; gap:8px; margin-top:18px; }
+  .qty-actions button{ flex:1; padding:11px; border-radius:9px; font-family:'Inter',sans-serif; font-size:13.5px; font-weight:600; cursor:pointer; }
+  .qty-cancel{ border:1px solid var(--line); background:transparent; color:var(--ink-soft); }
+  .qty-save{ border:none; background:var(--teal); color:#fff; }
+
+  @media (max-width:400px){ .macro-summary{ grid-template-columns:1fr; } }
+
   .custom-add{ display:flex; gap: 6px; margin-top: 8px; flex-wrap:wrap; }
   .custom-add input{ font-family:'IBM Plex Mono', monospace; border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-size: 12.5px; background: var(--paper); }
   .custom-add input.iname{ flex: 1; min-width: 120px; }
@@ -465,105 +530,8 @@
   // Plano alimentar prescrito pela nutricionista (ficha "Carbo alto", fev/2026)
   // meta diária ~1760 kcal — leve superávit calórico
   // meta diária ~1850 kcal — leve superávit calórico, recalculado para 47,5kg
-  const MEAL_PLAN = [
-    { key:'cafe', label:'Café da manhã / Pré-treino', items:[
-      { id:'cafe-0', n:'Ovo (a gosto)', q:'90g (~2 unid)', k:179, baseQty:90, unit:'g', subs:[
-        {n:'Peito de frango grelhado', q:'112g', baseQty:112, unit:'g'},
-        {n:'Atum em água (drenado)', q:'154g', baseQty:154, unit:'g'},
-        {n:'Peito de peru fatiado', q:'172g', baseQty:172, unit:'g'},
-        {n:'Whey Protein', q:'44g', baseQty:44, unit:'g'}
-      ]},
-      { id:'cafe-1', n:'Pão de forma integral', q:'50g (2 fatias)', k:126, baseQty:50, unit:'g', subs:[
-        {n:'Pão de forma tradicional', q:'50g', baseQty:50, unit:'g'},
-        {n:'Pão francês', q:'47g', baseQty:47, unit:'g'},
-        {n:'Tapioca (goma hidratada)', q:'105g', baseQty:105, unit:'g'},
-        {n:'Aveia em flocos', q:'32g', baseQty:32, unit:'g'}
-      ]},
-      { id:'cafe-2', n:'Uva Rubi ou Itália', q:'80g', k:42, baseQty:80, unit:'g', subs:[
-        {n:'Morango', q:'131g', baseQty:131, unit:'g'},
-        {n:'Mamão', q:'105g', baseQty:105, unit:'g'},
-        {n:'Melancia', q:'140g', baseQty:140, unit:'g'},
-        {n:'Banana prata', q:'43g', baseQty:43, unit:'g'},
-        {n:'Kiwi', q:'82g', baseQty:82, unit:'g'},
-        {n:'Laranja', q:'93g', baseQty:93, unit:'g'}
-      ]},
-      { id:'cafe-3', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[
-        {n:'Iogurte grego natural', q:'42g', baseQty:42, unit:'g'},
-        {n:'Coalhada', q:'67g', baseQty:67, unit:'g'}
-      ]}
-    ]},
-    { key:'pos', label:'Pós-treino', items:[
-      { id:'pos-0', n:'Whey Protein', q:'20g (dose cheia)', k:82, baseQty:20, unit:'g', subs:[
-        {n:'Peito de frango desfiado', q:'50g', baseQty:50, unit:'g'}
-      ]},
-      { id:'pos-1', n:'Leite de vaca sem lactose', q:'200ml', k:128, baseQty:200, unit:'ml', subs:[
-        {n:'Leite integral comum', q:'210ml', baseQty:210, unit:'ml'}
-      ]},
-      { id:'pos-2', n:'Banana prata', q:'112g', k:110, baseQty:112, unit:'g', subs:[
-        {n:'Manga', q:'183g', baseQty:183, unit:'g'},
-        {n:'Uva Rubi ou Itália', q:'208g', baseQty:208, unit:'g'}
-      ]},
-      { id:'pos-3', n:'Pasta de amendoim', q:'15g', k:88, baseQty:15, unit:'g', subs:[
-        {n:'Castanhas mistas', q:'15g', baseQty:15, unit:'g'}
-      ]}
-    ]},
-    { key:'almoco', label:'Almoço', items:[
-      { id:'almoco-0', n:'Arroz branco cozido', q:'120g', k:154, baseQty:120, unit:'g', subs:[
-        {n:'Batata doce cozida', q:'171g', baseQty:171, unit:'g'},
-        {n:'Macarrão, alho e óleo', q:'equivalente', baseQty:null, unit:null},
-        {n:'Quinoa cozida', q:'128g', baseQty:128, unit:'g'},
-        {n:'Mandioca/aipim cozido', q:'123g', baseQty:123, unit:'g'}
-      ]},
-      { id:'almoco-1', n:'Peito de frango grelhado', q:'60g', k:96, baseQty:60, unit:'g', subs:[
-        {n:'Carne vermelha magra sem gordura', q:'44g', baseQty:44, unit:'g'},
-        {n:'Peixe grelhado', q:'69g', baseQty:69, unit:'g'},
-        {n:'Ovo (a gosto)', q:'48g', baseQty:48, unit:'g'}
-      ]},
-      { id:'almoco-2', n:'Vegetais A (à vontade)', q:'livre', k:0, baseQty:null, unit:null, subs:[] },
-      { id:'almoco-3', n:'Azeite extra virgem', q:'8g', k:71, baseQty:8, unit:'g', subs:[
-        {n:'Manteiga', q:'10g', baseQty:10, unit:'g'}
-      ]}
-    ]},
-    { key:'lanche', label:'Lanche da tarde', items:[
-      { id:'lanche-0', n:'Uva Rubi ou Itália', q:'100g', k:53, baseQty:100, unit:'g', subs:[
-        {n:'Maçã fuji', q:'175g', baseQty:175, unit:'g'},
-        {n:'Morango', q:'166g', baseQty:166, unit:'g'},
-        {n:'Pera', q:'100g', baseQty:100, unit:'g'},
-        {n:'Melão', q:'177g', baseQty:177, unit:'g'},
-        {n:'Abacaxi', q:'110g', baseQty:110, unit:'g'}
-      ]},
-      { id:'lanche-1', n:'Iogurte natural', q:'80g', k:41, baseQty:80, unit:'g', subs:[
-        {n:'Iogurte grego natural', q:'42g', baseQty:42, unit:'g'},
-        {n:'Coalhada', q:'67g', baseQty:67, unit:'g'}
-      ]},
-      { id:'lanche-2', n:'Granola', q:'30g', k:147, baseQty:30, unit:'g', subs:[
-        {n:'Aveia em flocos', q:'38g', baseQty:38, unit:'g'},
-        {n:'Castanhas mistas', q:'24g', baseQty:24, unit:'g'}
-      ]}
-    ]},
-    { key:'jantar', label:'Jantar', items:[
-      { id:'jantar-0', n:'Carne vermelha magra sem gordura', q:'65g', k:143, baseQty:65, unit:'g', subs:[
-        {n:'Peito de frango grelhado', q:'90g', baseQty:90, unit:'g'},
-        {n:'Peixe grelhado', q:'102g', baseQty:102, unit:'g'},
-        {n:'Lombo suíno magro', q:'100g', baseQty:100, unit:'g'}
-      ]},
-      { id:'jantar-1', n:'Macarrão integral c/ molho de tomate', q:'150g', k:171, baseQty:150, unit:'g', subs:[
-        {n:'Arroz branco cozido', q:'133g', baseQty:133, unit:'g'},
-        {n:'Batata doce cozida', q:'190g', baseQty:190, unit:'g'},
-        {n:'Quinoa cozida', q:'142g', baseQty:142, unit:'g'}
-      ]},
-      { id:'jantar-2', n:'Suco integral de uva', q:'200ml', k:122, baseQty:200, unit:'ml', subs:[
-        {n:'Suco de laranja natural', q:'271ml', baseQty:271, unit:'ml'}
-      ]},
-      { id:'jantar-3', n:'Doce de leite', q:'25g', k:77, baseQty:25, unit:'g', subs:[
-        {n:'Chocolate ao leite', q:'14g', baseQty:14, unit:'g'},
-        {n:'Chocolate meio amargo', q:'16g', baseQty:16, unit:'g'},
-        {n:'Mel', q:'25g', baseQty:25, unit:'g'},
-        {n:'Geleia de frutas', q:'30g', baseQty:30, unit:'g'}
-      ]}
-    ]}
-  ];
   const DEFAULT_KCAL_GOAL = 1850;
+  const DEFAULT_PROT_GOAL = 109;
   const RUN_GOALS = [5, 10, 12, 15, 21];
   const RUN_WEEKLY_GROWTH = 1.10; // regra dos 10% — aumento seguro de distância por semana de corrida
 
@@ -682,82 +650,149 @@
   ];
 
   // alimentos extras (fora do plano) com kcal aproximado por porção usual
+  // Base nutricional — valores por 100g/100ml (fonte: TACO/USDA, arredondados)
+  // p = proteína (g/100g) · k100 = kcal/100g
+  // unit = unidade caseira típica; unitG = quanto essa unidade pesa em gramas
   const FOOD_DB = [
-    {n:'Arroz cozido', u:'4 colh. sopa', k:130},
-    {n:'Feijão cozido', u:'1 concha', k:90},
-    {n:'Lentilha cozida', u:'100g', k:93},
-    {n:'Grão de bico cozido', u:'100g', k:121},
-    {n:'Frango grelhado', u:'100g', k:165},
-    {n:'Carne bovina magra', u:'100g', k:200},
-    {n:'Peixe grelhado', u:'100g', k:140},
-    {n:'Tilápia grelhada', u:'100g', k:128},
-    {n:'Salmão grelhado', u:'100g', k:208},
-    {n:'Ovo cozido', u:'1 unid', k:70},
-    {n:'Pão francês', u:'1 unid', k:150},
-    {n:'Pão de queijo', u:'1 unid médio', k:100},
-    {n:'Batata doce', u:'100g', k:90},
-    {n:'Batata inglesa cozida', u:'100g', k:52},
-    {n:'Cuscuz cozido', u:'100g', k:112},
-    {n:'Macarrão cozido', u:'100g', k:150},
-    {n:'Maçã', u:'1 unid', k:80},
-    {n:'Abacate', u:'100g', k:160},
-    {n:'Queijo minas', u:'1 fatia', k:90},
-    {n:'Queijo cottage', u:'100g', k:98},
-    {n:'Iogurte desnatado', u:'100g', k:41},
-    {n:'Leite desnatado', u:'100ml', k:35},
-    {n:'Chocolate ao leite', u:'1 quadrado', k:30},
-    {n:'Biscoito água e sal', u:'4 unid', k:70},
-    {n:'Pipoca (sem óleo)', u:'100g', k:110},
-    {n:'Castanha do pará', u:'100g', k:643},
-    {n:'Amendoim torrado', u:'100g', k:567},
-    {n:'Café com leite', u:'1 xícara', k:40},
-    {n:'Brócolis cozido', u:'100g', k:30},
-    {n:'Cenoura crua', u:'100g', k:34},
-    {n:'Salada verde', u:'à vontade', k:15},
-    {n:'Hambúrguer caseiro', u:'1 unid', k:300},
-    {n:'X-burguer (lanchonete)', u:'1 unid', k:450},
-    {n:'Pizza (fatia média)', u:'1 fatia', k:250},
-    {n:'Batata frita', u:'100g', k:312},
-    {n:'Coxinha', u:'1 unid', k:200},
-    {n:'Pastel', u:'1 unid', k:300},
-    {n:'Macarrão à bolonhesa', u:'100g', k:140},
-    {n:'Macarrão ao molho branco', u:'100g', k:145},
-    {n:'Sanduíche natural', u:'1 unid', k:250},
-    {n:'Refrigerante comum', u:'1 lata (350ml)', k:150},
-    {n:'Refrigerante zero', u:'1 lata (350ml)', k:2},
-    {n:'Cerveja', u:'1 lata (350ml)', k:150},
-    {n:'Vinho tinto', u:'1 taça (150ml)', k:125},
-    {n:'Sorvete', u:'1 bola', k:100},
-    {n:'Chocolate (barra pequena)', u:'1 unid', k:150},
-    {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', u:'1 shake', k:343}
+    // ── Proteínas
+    {n:'Frango grelhado', k100:165, p:31, unit:'filé médio', unitG:100},
+    {n:'Frango desfiado', k100:165, p:31, unit:'porção', unitG:100},
+    {n:'Carne moída (patinho)', k100:212, p:27, unit:'porção', unitG:100},
+    {n:'Carne bovina magra', k100:200, p:26, unit:'bife médio', unitG:100},
+    {n:'Peixe grelhado', k100:140, p:24, unit:'filé', unitG:100},
+    {n:'Tilápia grelhada', k100:128, p:26, unit:'filé', unitG:100},
+    {n:'Salmão grelhado', k100:208, p:22, unit:'posta', unitG:100},
+    {n:'Lombo suíno magro', k100:143, p:27, unit:'porção', unitG:100},
+    {n:'Atum em água (drenado)', k100:116, p:26, unit:'lata', unitG:120},
+    {n:'Peito de peru fatiado', k100:104, p:17, unit:'fatia', unitG:15},
+    {n:'Ovo cozido', k100:155, p:13, unit:'ovo', unitG:45},
+    {n:'Ovo mexido/frito (pouco óleo)', k100:199, p:13, unit:'ovo', unitG:50},
+    {n:'Whey Protein', k100:410, p:80, unit:'dose (scoop)', unitG:30},
+
+    // ── Laticínios
+    {n:'Leite integral', k100:61, p:3.2, unit:'copo', unitG:200},
+    {n:'Leite sem lactose', k100:64, p:3.3, unit:'copo', unitG:200},
+    {n:'Leite desnatado', k100:35, p:3.4, unit:'copo', unitG:200},
+    {n:'Iogurte natural', k100:51, p:4.1, unit:'pote pequeno', unitG:170},
+    {n:'Iogurte grego natural', k100:97, p:9, unit:'pote', unitG:100},
+    {n:'Iogurte desnatado', k100:41, p:4.3, unit:'pote', unitG:170},
+    {n:'Coalhada', k100:61, p:4, unit:'pote', unitG:170},
+    {n:'Queijo minas frescal', k100:264, p:17, unit:'fatia', unitG:30},
+    {n:'Queijo cottage', k100:98, p:11, unit:'porção', unitG:100},
+    {n:'Requeijão', k100:257, p:9, unit:'colher de sopa', unitG:20},
+
+    // ── Carboidratos
+    {n:'Arroz branco cozido', k100:128, p:2.5, unit:'colher de sopa', unitG:22},
+    {n:'Arroz integral cozido', k100:124, p:2.6, unit:'colher de sopa', unitG:22},
+    {n:'Feijão cozido', k100:76, p:4.8, unit:'concha', unitG:120},
+    {n:'Lentilha cozida', k100:93, p:9, unit:'concha', unitG:120},
+    {n:'Grão de bico cozido', k100:121, p:9, unit:'concha', unitG:120},
+    {n:'Macarrão cozido', k100:150, p:5, unit:'prato raso', unitG:150},
+    {n:'Macarrão integral cozido', k100:114, p:5, unit:'prato raso', unitG:150},
+    {n:'Macarrão à bolonhesa', k100:140, p:7, unit:'prato raso', unitG:200},
+    {n:'Macarrão ao molho branco', k100:145, p:5, unit:'prato raso', unitG:200},
+    {n:'Batata doce cozida', k100:90, p:1.6, unit:'batata média', unitG:170},
+    {n:'Batata inglesa cozida', k100:52, p:1.4, unit:'batata média', unitG:150},
+    {n:'Mandioca/aipim cozido', k100:125, p:1, unit:'pedaço', unitG:100},
+    {n:'Quinoa cozida', k100:120, p:4.4, unit:'colher de sopa', unitG:25},
+    {n:'Cuscuz cozido', k100:112, p:3.8, unit:'porção', unitG:100},
+    {n:'Tapioca (goma hidratada)', k100:120, p:0.3, unit:'unidade', unitG:100},
+    {n:'Aveia em flocos', k100:394, p:14, unit:'colher de sopa', unitG:15},
+    {n:'Granola', k100:490, p:9, unit:'colher de sopa', unitG:10},
+    {n:'Pão de forma integral', k100:253, p:9, unit:'fatia', unitG:25},
+    {n:'Pão de forma tradicional', k100:253, p:8, unit:'fatia', unitG:25},
+    {n:'Pão francês', k100:300, p:8, unit:'unidade', unitG:50},
+    {n:'Pão de queijo', k100:290, p:5, unit:'unidade média', unitG:35},
+    {n:'Biscoito água e sal', k100:430, p:9, unit:'unidade', unitG:6},
+
+    // ── Frutas
+    {n:'Banana prata', k100:98, p:1.3, unit:'unidade', unitG:85},
+    {n:'Banana nanica', k100:92, p:1.4, unit:'unidade', unitG:120},
+    {n:'Maçã fuji', k100:56, p:0.3, unit:'unidade', unitG:130},
+    {n:'Uva Rubi/Itália', k100:53, p:0.7, unit:'unidade', unitG:5},
+    {n:'Morango', k100:32, p:0.7, unit:'unidade', unitG:15},
+    {n:'Mamão', k100:40, p:0.5, unit:'fatia', unitG:120},
+    {n:'Melancia', k100:30, p:0.6, unit:'fatia', unitG:200},
+    {n:'Melão', k100:30, p:0.8, unit:'fatia', unitG:150},
+    {n:'Abacaxi', k100:48, p:0.5, unit:'fatia', unitG:100},
+    {n:'Manga', k100:60, p:0.8, unit:'unidade', unitG:200},
+    {n:'Pera', k100:53, p:0.4, unit:'unidade', unitG:130},
+    {n:'Laranja', k100:45, p:0.9, unit:'unidade', unitG:130},
+    {n:'Kiwi', k100:51, p:1.1, unit:'unidade', unitG:75},
+    {n:'Abacate', k100:160, p:2, unit:'porção', unitG:100},
+
+    // ── Gorduras e oleaginosas
+    {n:'Azeite extra virgem', k100:884, p:0, unit:'colher de sopa', unitG:8},
+    {n:'Manteiga', k100:717, p:0.9, unit:'colher de chá', unitG:5},
+    {n:'Pasta de amendoim', k100:588, p:25, unit:'colher de sopa', unitG:15},
+    {n:'Castanhas mistas', k100:600, p:15, unit:'punhado', unitG:30},
+    {n:'Castanha do pará', k100:643, p:14, unit:'unidade', unitG:5},
+    {n:'Amendoim torrado', k100:567, p:26, unit:'punhado', unitG:30},
+
+    // ── Vegetais
+    {n:'Salada verde', k100:15, p:1.4, unit:'prato', unitG:100},
+    {n:'Brócolis cozido', k100:30, p:2.8, unit:'porção', unitG:100},
+    {n:'Cenoura crua', k100:34, p:0.9, unit:'unidade média', unitG:80},
+    {n:'Vegetais (à vontade)', k100:25, p:1.5, unit:'porção', unitG:100},
+
+    // ── Bebidas
+    {n:'Suco integral de uva', k100:61, p:0.4, unit:'copo', unitG:200},
+    {n:'Suco de laranja natural', k100:45, p:0.7, unit:'copo', unitG:200},
+    {n:'Café com leite', k100:20, p:1.5, unit:'xícara', unitG:200},
+    {n:'Refrigerante comum', k100:43, p:0, unit:'lata', unitG:350},
+    {n:'Refrigerante zero', k100:0.5, p:0, unit:'lata', unitG:350},
+    {n:'Cerveja', k100:43, p:0.5, unit:'lata', unitG:350},
+    {n:'Vinho tinto', k100:83, p:0.1, unit:'taça', unitG:150},
+
+    // ── Doces e ultraprocessados
+    {n:'Doce de leite', k100:306, p:6, unit:'colher de sopa', unitG:15},
+    {n:'Chocolate ao leite', k100:535, p:7.6, unit:'quadradinho', unitG:5},
+    {n:'Chocolate meio amargo', k100:480, p:8, unit:'quadradinho', unitG:5},
+    {n:'Mel', k100:309, p:0.3, unit:'colher de sopa', unitG:15},
+    {n:'Geleia de frutas', k100:257, p:0.4, unit:'colher de sopa', unitG:20},
+    {n:'Sorvete', k100:207, p:3.5, unit:'bola', unitG:50},
+    {n:'Pipoca (sem óleo)', k100:387, p:12, unit:'porção', unitG:30},
+
+    // ── Refeições prontas / fora
+    {n:'Hambúrguer caseiro', k100:250, p:15, unit:'unidade', unitG:120},
+    {n:'X-burguer (lanchonete)', k100:280, p:14, unit:'unidade', unitG:160},
+    {n:'Pizza', k100:266, p:11, unit:'fatia', unitG:95},
+    {n:'Batata frita', k100:312, p:3.4, unit:'porção', unitG:100},
+    {n:'Coxinha', k100:250, p:8, unit:'unidade', unitG:80},
+    {n:'Pastel', k100:300, p:7, unit:'unidade', unitG:100},
+    {n:'Sanduíche natural', k100:200, p:10, unit:'unidade', unitG:125},
+    {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', k100:70, p:6, unit:'shake', unitG:490}
   ];
 
-  const ALL_FOOD_NAMES = Array.from(new Set([
-    ...FOOD_DB.map(f=>f.n),
-    ...MEAL_PLAN.flatMap(m=>m.items.flatMap(it=>[it.n, ...(it.subs||[]).map(s=>s.n)]))
-  ])).sort();
+  // Refeições do dia (só a estrutura — os itens começam vazios e você adiciona o que comeu)
+  const MEALS = [
+    { key:'pre',    label:'Pré-treino' },
+    { key:'cafe',   label:'Café da manhã' },
+    { key:'pos',    label:'Pós-treino' },
+    { key:'almoco', label:'Almoço' },
+    { key:'lanche', label:'Lanche da tarde' },
+    { key:'jantar', label:'Jantar' }
+  ];
 
-  // Densidade calórica real (kcal por 100g/100ml) — calculada a partir dos dados do plano,
-  // que já são internamente consistentes (mesma comida = mesma densidade em qualquer lugar que apareça).
-  const FOOD_DENSITY_100 = {};
-  MEAL_PLAN.forEach(m => m.items.forEach(it => {
-    if (it.baseQty) FOOD_DENSITY_100[it.n] = it.k / it.baseQty * 100;
-    (it.subs||[]).forEach(s => {
-      if (s.baseQty && !(s.n in FOOD_DENSITY_100)) FOOD_DENSITY_100[s.n] = it.k / s.baseQty * 100;
-    });
-  }));
-  FOOD_DB.forEach(f => { if ((f.u === '100g' || f.u === '100ml') && !(f.n in FOOD_DENSITY_100)) FOOD_DENSITY_100[f.n] = f.k; });
+  const FOOD_BY_NAME = {};
+  FOOD_DB.forEach(f => { FOOD_BY_NAME[f.n] = f; });
 
-  // Alimentos sem densidade conhecida (porção fixa tipo "1 unid", "à vontade") — usa kcal direto, sem escalar
-  const FOOD_FIXED_KCAL = {};
-  FOOD_DB.forEach(f => { if (!(f.n in FOOD_DENSITY_100)) FOOD_FIXED_KCAL[f.n] = f.k; });
-
-  // Porção padrão realista de cada alimento (pra não sugerir "100g" de whey ou azeite, por exemplo)
-  const FOOD_DEFAULT_QTY = {};
-  MEAL_PLAN.forEach(m => m.items.forEach(it => {
-    (it.subs||[]).forEach(s => { if (s.baseQty && !(s.n in FOOD_DEFAULT_QTY)) FOOD_DEFAULT_QTY[s.n] = s.baseQty; });
-  }));
-  MEAL_PLAN.forEach(m => m.items.forEach(it => { if (it.baseQty) FOOD_DEFAULT_QTY[it.n] = it.baseQty; }));
+  // Converte a quantidade registrada em gramas, seja ela em 'g' ou em unidades caseiras
+  function toGrams(entry){
+    const f = FOOD_BY_NAME[entry.n];
+    if (!f) return 0;
+    return entry.mode === 'un' ? entry.qty * f.unitG : entry.qty;
+  }
+  function entryKcal(entry){
+    const f = FOOD_BY_NAME[entry.n];
+    if (!f) return 0;
+    return Math.round(f.k100 * toGrams(entry) / 100);
+  }
+  function entryProt(entry){
+    const f = FOOD_BY_NAME[entry.n];
+    if (!f) return 0;
+    return f.p * toGrams(entry) / 100;
+  }
 
   function localISO(date){
     const y = date.getFullYear(), m = String(date.getMonth()+1).padStart(2,'0'), d = String(date.getDate()).padStart(2,'0');
@@ -809,9 +844,7 @@
       treinoFeito: false,
       water: { count: 0 },
       suplemento: false,
-      plan: {},
-      mealExtras: { cafe:[], pos:[], almoco:[], lanche:[], jantar:[] },
-      extras: { items: [], obs: '' },
+      meals: { pre:[], cafe:[], pos:[], almoco:[], lanche:[], jantar:[] },
       exercicios: {},
       humor: { mood: null, pensamento: '', reformulacao: '' },
       corrida: { km: null, min: null, conversa: null },
@@ -825,11 +858,9 @@
     if (!checkins[iso]) checkins[iso] = emptyDay();
     const d = checkins[iso];
     if (!d.water) d.water = { count:0 };
-    if (!d.plan) d.plan = {};
-    if (!d.mealExtras) d.mealExtras = { cafe:[], pos:[], almoco:[], lanche:[], jantar:[] };
-    MEAL_PLAN.forEach(m => { if (!d.mealExtras[m.key]) d.mealExtras[m.key] = []; });
+    if (!d.meals) d.meals = { pre:[], cafe:[], pos:[], almoco:[], lanche:[], jantar:[] };
+    MEALS.forEach(m => { if (!d.meals[m.key]) d.meals[m.key] = []; });
     if (typeof d.suplemento === 'undefined') d.suplemento = false;
-    if (!d.extras) d.extras = { items:[], obs:'' };
     if (!d.exercicios) d.exercicios = {};
     if (!d.humor) d.humor = { mood: null, pensamento: '', reformulacao: '' };
     if (!d.corrida) d.corrida = { km: null, min: null, conversa: null };
@@ -837,6 +868,21 @@
     if (typeof d.treinoAlternativo === 'undefined') d.treinoAlternativo = '';
     if (!d.treinoCustom) d.treinoCustom = [];
     return d;
+  }
+
+  function mealKcal(d, mealKey){
+    return (d.meals[mealKey]||[]).reduce((s,e)=> s + entryKcal(e), 0);
+  }
+  function mealProt(d, mealKey){
+    return (d.meals[mealKey]||[]).reduce((s,e)=> s + entryProt(e), 0);
+  }
+  function dayTotalKcal(d){
+    if (!d.meals) return 0;
+    return MEALS.reduce((s,m)=> s + mealKcal(d, m.key), 0);
+  }
+  function dayTotalProt(d){
+    if (!d.meals) return 0;
+    return MEALS.reduce((s,m)=> s + mealProt(d, m.key), 0);
   }
 
   function getExState(d, exId){
@@ -887,70 +933,7 @@
       const r = await storage.get('config', false);
       if (r) config = Object.assign(config, JSON.parse(r.value));
     } catch(e){}
-    await runOneTimeFix_2026_07_23();
-    await runClearWedFood_2026_07_22();
     render();
-  }
-
-  // Correção única: bug antigo de fuso horário fez dados digitados na noite de
-  // 22/07 (quarta) serem salvos por engano na gaveta de 23/07 (quinta). Move de volta.
-  function isFieldEmptyValue(f, val){
-    if (f==='corrida') return !val || val.km===null || val.km===undefined;
-    if (f==='humor') return !val || val.mood===null || val.mood===undefined;
-    if (f==='plan') return !val || Object.keys(val).length===0;
-    if (f==='mealExtras') return !val || Object.values(val).every(arr=>!arr||arr.length===0);
-    if (f==='extras') return !val || (!val.items || val.items.length===0);
-    if (f==='water') return !val || !val.count;
-    if (f==='notaDia') return !val;
-    if (f==='suplemento') return !val;
-    return true;
-  }
-  async function runOneTimeFix_2026_07_23(){
-    try {
-      const already = await storage.get('fix_2026_07_23_done', false);
-      if (already) return;
-    } catch(e){ /* não existe ainda -> segue e roda a correção */ }
-    try {
-      const wed = '2026-07-22', thu = '2026-07-23';
-      if (checkins[thu]) {
-        const thuDay = getDay(thu);
-        const wedDay = getDay(wed);
-        const fields = ['corrida','humor','plan','mealExtras','extras','water','notaDia','suplemento'];
-        let moved = false;
-        fields.forEach(f => {
-          const wedEmpty = isFieldEmptyValue(f, wedDay[f]);
-          const thuHasData = !isFieldEmptyValue(f, thuDay[f]);
-          if (wedEmpty && thuHasData) {
-            wedDay[f] = thuDay[f];
-            thuDay[f] = emptyDay()[f];
-            moved = true;
-          }
-        });
-        if (moved) {
-          await saveDay(wed);
-          await saveDay(thu);
-        }
-      }
-    } catch(e){}
-    try { await storage.set('fix_2026_07_23_done', '1', false); } catch(e){}
-  }
-
-  // Limpa só os campos de Alimentação/Sono de quarta (22/07), pra teste isolado — roda uma vez só
-  async function runClearWedFood_2026_07_22(){
-    try {
-      const already = await storage.get('clear_wed_food_done', false);
-      if (already) return;
-    } catch(e){ /* não existe ainda -> segue e limpa */ }
-    try {
-      const wed = '2026-07-22';
-      const fresh = emptyDay();
-      const wedDay = getDay(wed);
-      ['peso','sono','energia','ciclo','dores','water','plan','mealExtras','extras','suplemento'].forEach(f => {
-        wedDay[f] = fresh[f];
-      });
-      await saveDay(wed);
-    } catch(e){}
-    try { await storage.set('clear_wed_food_done', '1', false); } catch(e){}
   }
 
   function isEditableDayKey(dayKey){
@@ -1574,53 +1557,6 @@
     return `<svg viewBox="0 0 24 40" fill="currentColor"><rect x="9" y="0" width="6" height="5" rx="1"/><path d="M6 8h12v3.2c1.2.9 2 2.4 2 4.1V35a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V15.3c0-1.7.8-3.2 2-4.1V8Z" fill-opacity="0.18" stroke="currentColor" stroke-width="1.4"/><path d="M4.3 17H19.7V35a4 4 0 0 1-4 4H8.3a4 4 0 0 1-4-4V17Z"/></svg>`;
   }
 
-  function extrasTotal(extras){
-    return extras.items.reduce((sum,it)=> sum + it.k*it.qty, 0);
-  }
-  function activeOption(it, state){
-    // retorna {baseQty, unit} da opção atualmente selecionada (previsto ou substituto)
-    if (state.sel && state.sel > 0) {
-      const sub = it.subs[state.sel - 1];
-      return sub ? { baseQty: sub.baseQty, unit: sub.unit } : { baseQty: it.baseQty, unit: it.unit };
-    }
-    return { baseQty: it.baseQty, unit: it.unit };
-  }
-  function getItemState(d, it){
-    const raw = d.plan[it.id];
-    if (raw && typeof raw === 'object') return raw;
-    if (typeof raw === 'boolean') return { done: raw, qty: it.baseQty || 0, sel: 0 };
-    return { done: false, qty: it.baseQty || 0, sel: 0 };
-  }
-  function itemKcal(it, state){
-    if (!state.done) return 0;
-    const opt = activeOption(it, state);
-    if (!opt.baseQty) return it.k; // item livre ou substituto sem quantidade definida (ex: "equivalente")
-    return Math.round(it.k * (state.qty / opt.baseQty));
-  }
-  function planItemsChecked(d){
-    let n = 0;
-    MEAL_PLAN.forEach(m => m.items.forEach(it => { if (getItemState(d,it).done) n++; }));
-    return n;
-  }
-  function planItemsTotal(){
-    let n = 0;
-    MEAL_PLAN.forEach(m => n += m.items.length);
-    return n;
-  }
-  function mealExtraTotal(d, mealKey){
-    const items = (d.mealExtras && d.mealExtras[mealKey]) || [];
-    return items.reduce((s,it)=> s + it.k*it.qty, 0);
-  }
-  function dayTotalKcal(d){
-    let total = 0;
-    MEAL_PLAN.forEach(m => {
-      m.items.forEach(it => { total += itemKcal(it, getItemState(d,it)); });
-      total += mealExtraTotal(d, m.key);
-    });
-    total += extrasTotal(d.extras);
-    return total;
-  }
-
   function renderPainel(){
     const wk = weekDates();
     const dates = panelRange === 'mes' ? monthDates() : wk;
@@ -1635,7 +1571,10 @@
     const goalKcal = parseInt(config.calorieGoal) || DEFAULT_KCAL_GOAL;
     const goalBottles = parseInt(config.waterGoalBottles) || 3;
     const todayKcal = today ? dayTotalKcal(today) : 0;
+    const todayProt = today ? dayTotalProt(today) : 0;
+    const goalProt = parseInt(config.protGoal) || DEFAULT_PROT_GOAL;
     const kcalPct = (goalKcal && today) ? Math.min(100, Math.round(todayKcal/goalKcal*100)) : 0;
+    const protPct = (goalProt && today) ? Math.min(100, Math.round(todayProt/goalProt*100)) : 0;
     const latestWeight = getLatestWeight();
     const waterMinL = (latestWeight*25/1000).toFixed(1);
     const waterMaxL = (latestWeight*50/1000).toFixed(1);
@@ -1643,8 +1582,7 @@
     const rangeLabel = panelRange === 'mes' ? 'este mês' : '7 dias';
     const monthName = new Date().toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
 
-    let html = `<datalist id="foodSuggestions">${ALL_FOOD_NAMES.map(n=>`<option value="${n}">`).join('')}</datalist>`;
-    html += `<div class="card-head"><div>
+    let html = `<div class="card-head"><div>
       <p class="card-eyebrow">${panelRange==='mes' ? monthName : 'Últimos 7 dias'}</p>
       <h2 class="card-title">Painel</h2>
       <p class="card-focus">Poucos números, sem cobrança. Marque o que fizer sentido no dia.</p>
@@ -1725,8 +1663,19 @@
         <span class="water-total" id="waterTotal"></span>
       </div>
 
-      <p class="group-label">Alimentação<span style="font-weight:400; text-transform:none; letter-spacing:0;">${todayKcal} / ${goalKcal} kcal · ${planItemsChecked(today)}/${planItemsTotal()} itens do plano</span></p>
-      <div class="kcal-progress-wrap"><div class="kcal-progress-bar"><div class="kcal-progress-fill" style="width:${kcalPct}%"></div></div></div>
+      <p class="group-label">Alimentação</p>
+      <div class="macro-summary">
+        <div class="macro-item">
+          <div class="macro-num">${todayKcal} <span class="macro-goal">/ ${goalKcal}</span></div>
+          <div class="macro-lbl">kcal — energia do dia</div>
+          <div class="kcal-progress-bar"><div class="kcal-progress-fill" style="width:${kcalPct}%"></div></div>
+        </div>
+        <div class="macro-item">
+          <div class="macro-num">${Math.round(todayProt)}g <span class="macro-goal">/ ${goalProt}g</span></div>
+          <div class="macro-lbl">proteína — material p/ o músculo</div>
+          <div class="kcal-progress-bar"><div class="kcal-progress-fill" style="width:${protPct}%; background:var(--ochre);"></div></div>
+        </div>
+      </div>
       <div id="mealsWrap"></div>
 
       <div class="meal-card">
@@ -1737,10 +1686,7 @@
             Multivitamínico — 1 dose (qualquer horário)
           </label>
         </div>
-      </div>
-
-      <p class="group-label">Fora do plano (extras)</p>
-      <div id="extrasWrap"></div>`;
+      </div>`;
     }
 
     html += `<details style="margin: 16px 0 4px;">
@@ -1760,8 +1706,7 @@
 
     if (selEditable) {
       renderBottles(today, goalBottles, selDate);
-      MEAL_PLAN.forEach(m => renderMealPlanCard(m, today, selDate));
-      renderExtrasCard(today, selDate);
+      MEALS.forEach(m => renderMealCard(m, today, selDate));
 
       document.getElementById('fPeso').onchange = async (e) => { today.peso = e.target.value || null; await saveDay(selDate); toast(); render(); };
       document.getElementById('fSono').onchange = async (e) => { today.sono = e.target.value || null; await saveDay(selDate); toast(); };
@@ -1810,223 +1755,184 @@
     document.getElementById('waterTotal').textContent = (count*0.8).toFixed(1) + ' L nesse dia (garrafinha de 800ml)';
   }
 
-  function findItemById(id){
-    for (const m of MEAL_PLAN) { const it = m.items.find(x=>x.id===id); if (it) return it; }
-    return null;
-  }
+  // Estado da busca aberta (qual refeição está adicionando alimento)
+  let openSearchMeal = null;
+  let searchQuery = '';
 
-  function renderMealPlanCard(m, today, dateForSave){
+  function renderMealCard(m, today, dateForSave){
     const wrap = document.getElementById('mealsWrap');
-    const extraItems = (today.mealExtras && today.mealExtras[m.key]) || [];
-    const kcalDone = m.items.reduce((s,it)=> s + itemKcal(it, getItemState(today,it)), 0) + mealExtraTotal(today, m.key);
+    const entries = today.meals[m.key] || [];
+    const kc = mealKcal(today, m.key);
+    const pr = mealProt(today, m.key);
     const card = document.createElement('div');
     card.className = 'meal-card';
+
+    const isSearchOpen = openSearchMeal === m.key;
+    const q = searchQuery.trim().toLowerCase();
+    const results = isSearchOpen
+      ? (q ? FOOD_DB.filter(f => f.n.toLowerCase().includes(q)).slice(0,12) : FOOD_DB.slice(0,10))
+      : [];
+
     card.innerHTML = `
-      <div class="meal-head"><span class="meal-title">${m.label}</span><span class="meal-kcal">${kcalDone} kcal</span></div>
-      <div class="item-list">${m.items.map(it => {
-        const state = getItemState(today, it);
-        const opt = activeOption(it, state);
-        const optsHtml = it.subs.length
-          ? `<select class="plan-sel" data-id="${it.id}">
-               <option value="0" ${state.sel===0?'selected':''}>${it.n} · ${it.q}</option>
-               ${it.subs.map((s,si)=>`<option value="${si+1}" ${state.sel===si+1?'selected':''}>${s.n} · ${s.q}</option>`).join('')}
-             </select>`
-          : `<span class="item-name">${it.n} · ${it.q}</span>`;
-        const showQtyInput = !!opt.baseQty;
-        const qtyHtml = showQtyInput
-          ? `<input type="number" class="plan-qty" data-id="${it.id}" value="${state.qty}"> <span class="qty-unit">${opt.unit}</span>`
-          : '';
-        return `<div class="item-row">
-          <label class="item-check-label">
-            <input type="checkbox" class="plan-chk" data-id="${it.id}" ${state.done?'checked':''}>
-            <span class="item-name-wrap">${optsHtml}</span>
-          </label>
-          <div class="item-meta">
-            ${qtyHtml ? `<span class="qty-box">${qtyHtml}</span>` : ''}
-            <span class="item-kcal">${itemKcal(it, state)} kcal</span>
+      <div class="meal-head">
+        <span class="meal-title">${m.label}</span>
+        <span class="meal-kcal">${kc} kcal${pr>0 ? ` · ${pr.toFixed(0)}g prot` : ''}</span>
+      </div>
+
+      ${entries.length ? `<div class="item-list">${entries.map((e,i)=>{
+        const f = FOOD_BY_NAME[e.n];
+        const g = Math.round(toGrams(e));
+        const qtyLabel = e.mode === 'un'
+          ? `${e.qty} ${f ? f.unit + (e.qty>1?'s':'') : 'un'} <span class="conv">(${g}g)</span>`
+          : `${g}g`;
+        return `<div class="food-row">
+          <div class="food-main">
+            <span class="food-name">${e.n}</span>
+            <span class="food-qty">${qtyLabel}</span>
           </div>
+          <div class="food-macros">
+            <span class="food-kcal">${entryKcal(e)}<span class="macro-unit">kcal</span></span>
+            <span class="food-prot">${entryProt(e).toFixed(1)}<span class="macro-unit">g prot</span></span>
+          </div>
+          <button class="item-x meal-entry-x" data-meal="${m.key}" data-i="${i}" title="remover">×</button>
         </div>`;
-      }).join('')}
-      ${extraItems.map((it,i)=>`
-        <div class="item-row">
-          <span class="item-name">${it.n}${it.qty>1?' ×'+it.qty:''}</span>
-          <span class="item-kcal">${it.k*it.qty} kcal</span>
-          <button class="item-x meal-extra-x" data-meal="${m.key}" data-i="${i}" title="remover">×</button>
-        </div>`).join('')}
-      </div>
-      <p class="hint" style="margin-top:10px;">Comeu mais ou menos que o previsto (previsto ou substituto)? Ajuste o número ao lado do alimento — a kcal recalcula sozinha.</p>
-      <div class="custom-add-v2" style="margin-top:10px;">
-        <input type="text" class="iname-full" id="fMealExtraNome-${m.key}" list="foodSuggestions" placeholder="outro alimento fora da lista...">
-        <div class="custom-add-row">
-          <input type="number" class="ikcal" id="fMealExtraQtd-${m.key}" placeholder="qtd (g)">
-          <input type="number" class="ikcal" id="fMealExtraKcal-${m.key}" placeholder="kcal">
-          <button class="btnAddMealExtra" data-meal="${m.key}">adicionar</button>
+      }).join('')}</div>` : `<p class="hint" style="margin:4px 0 10px;">Nada registrado nessa refeição ainda.</p>`}
+
+      ${isSearchOpen ? `
+        <div class="food-search">
+          <input type="text" class="food-search-input" id="fSearch-${m.key}" placeholder="buscar alimento..." value="${searchQuery}" autocomplete="off">
+          <div class="food-results">
+            ${results.length ? results.map(f=>`
+              <button class="food-result" data-meal="${m.key}" data-food="${f.n.replace(/"/g,'&quot;')}">
+                <span class="fr-name">${f.n}</span>
+                <span class="fr-info">${f.k100} kcal · ${f.p}g prot <span class="fr-per">/100g</span></span>
+              </button>`).join('')
+            : `<p class="hint" style="margin:8px 0;">Nenhum alimento encontrado com "${searchQuery}".</p>`}
+          </div>
+          <button class="search-cancel" data-meal="${m.key}">cancelar</button>
         </div>
-      </div>
-      <p class="hint" style="margin-top:6px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha. Senão, digite a kcal total.</p>
+      ` : `<button class="add-food-btn" data-meal="${m.key}">+ adicionar alimento</button>`}
     `;
     wrap.appendChild(card);
 
-    card.querySelectorAll('.plan-chk').forEach(chk => {
-      chk.onchange = async (e) => {
-        const it = findItemById(chk.dataset.id);
-        const state = getItemState(today, it);
-        state.done = e.target.checked;
-        today.plan[it.id] = state;
-        await saveDay(dateForSave);
-        toast();
-        render();
+    // abrir busca
+    const addBtn = card.querySelector('.add-food-btn');
+    if (addBtn) addBtn.onclick = () => { openSearchMeal = m.key; searchQuery = ''; render(); };
+
+    // cancelar busca
+    const cancelBtn = card.querySelector('.search-cancel');
+    if (cancelBtn) cancelBtn.onclick = () => { openSearchMeal = null; searchQuery = ''; render(); };
+
+    // digitar na busca (sem re-render completo, pra não perder o foco do teclado)
+    const searchInput = card.querySelector('.food-search-input');
+    if (searchInput) {
+      searchInput.oninput = (e) => {
+        searchQuery = e.target.value;
+        const qq = searchQuery.trim().toLowerCase();
+        const res = qq ? FOOD_DB.filter(f => f.n.toLowerCase().includes(qq)).slice(0,12) : FOOD_DB.slice(0,10);
+        const box = card.querySelector('.food-results');
+        box.innerHTML = res.length ? res.map(f=>`
+          <button class="food-result" data-meal="${m.key}" data-food="${f.n.replace(/"/g,'&quot;')}">
+            <span class="fr-name">${f.n}</span>
+            <span class="fr-info">${f.k100} kcal · ${f.p}g prot <span class="fr-per">/100g</span></span>
+          </button>`).join('')
+          : `<p class="hint" style="margin:8px 0;">Nenhum alimento encontrado.</p>`;
+        bindResults();
       };
-    });
-    card.querySelectorAll('.plan-sel').forEach(sel => {
-      sel.onchange = async (e) => {
-        const it = findItemById(sel.dataset.id);
-        const state = getItemState(today, it);
-        state.sel = parseInt(e.target.value);
-        const opt = activeOption(it, state);
-        state.qty = opt.baseQty || 0; // reinicia a quantidade pro padrão da opção escolhida
-        today.plan[it.id] = state;
-        await saveDay(dateForSave);
-        toast();
-        render();
-      };
-    });
-    card.querySelectorAll('.plan-qty').forEach(inp => {
-      inp.onchange = async (e) => {
-        const it = findItemById(inp.dataset.id);
-        const state = getItemState(today, it);
-        state.qty = parseFloat(e.target.value) || 0;
-        today.plan[it.id] = state;
-        await saveDay(dateForSave);
-        toast();
-        render();
-      };
-    });
-    card.querySelectorAll('.meal-extra-x').forEach(btn => {
-      btn.onclick = async () => {
-        today.mealExtras[btn.dataset.meal].splice(parseInt(btn.dataset.i), 1);
-        await saveDay(dateForSave);
-        toast();
-        render();
-      };
-    });
-    const btnAdd = card.querySelector('.btnAddMealExtra');
-    const nomeInputEl = document.getElementById('fMealExtraNome-'+m.key);
-    const qtdInputEl = document.getElementById('fMealExtraQtd-'+m.key);
-    const kcalInputEl = document.getElementById('fMealExtraKcal-'+m.key);
-    function recomputeMealExtraKcal(){
-      const density = FOOD_DENSITY_100[nomeInputEl.value];
-      if (density !== undefined) {
-        qtdInputEl.style.display = '';
-        if (!qtdInputEl.value) qtdInputEl.value = FOOD_DEFAULT_QTY[nomeInputEl.value] || 100;
-        const qtd = parseFloat(qtdInputEl.value) || 0;
-        kcalInputEl.value = Math.round(density * qtd / 100);
-      } else {
-        const fixed = FOOD_FIXED_KCAL[nomeInputEl.value];
-        if (fixed !== undefined) {
-          qtdInputEl.style.display = 'none';
-          kcalInputEl.value = fixed;
-        } else {
-          qtdInputEl.style.display = '';
-        }
-      }
+      setTimeout(()=> searchInput.focus(), 30);
     }
-    if (nomeInputEl) nomeInputEl.addEventListener('input', recomputeMealExtraKcal);
-    if (qtdInputEl) qtdInputEl.addEventListener('input', recomputeMealExtraKcal);
-    if (btnAdd) btnAdd.onclick = async () => {
-      const nome = nomeInputEl.value.trim();
-      const kcal = parseInt(kcalInputEl.value);
-      if (!nome || !kcal) return;
-      if (!today.mealExtras[m.key]) today.mealExtras[m.key] = [];
-      today.mealExtras[m.key].push({ n: nome, k: kcal, qty: 1 });
-      await saveDay(dateForSave);
-      toast();
-      render();
-    };
+
+    function bindResults(){
+      card.querySelectorAll('.food-result').forEach(btn => {
+        btn.onclick = async () => {
+          const nome = btn.dataset.food;
+          const f = FOOD_BY_NAME[nome];
+          if (!f) return;
+          // entra já com 1 unidade caseira (o jeito mais natural de registrar sem pesar)
+          today.meals[m.key].push({ n: nome, qty: 1, mode: 'un' });
+          openSearchMeal = null;
+          searchQuery = '';
+          await saveDay(dateForSave);
+          toast();
+          render();
+        };
+      });
+    }
+    bindResults();
+
+    // remover item
+    card.querySelectorAll('.meal-entry-x').forEach(btn => {
+      btn.onclick = async () => {
+        today.meals[btn.dataset.meal].splice(parseInt(btn.dataset.i), 1);
+        await saveDay(dateForSave);
+        toast();
+        render();
+      };
+    });
+
+    // editar quantidade ao tocar no item
+    card.querySelectorAll('.food-main').forEach((el, i) => {
+      el.onclick = () => openQtyEditor(m.key, i, today, dateForSave);
+    });
   }
 
-  function renderExtrasCard(today, dateForSave){
-    const wrap = document.getElementById('extrasWrap');
-    const extras = today.extras;
-    const card = document.createElement('div');
-    card.className = 'meal-card';
-    card.innerHTML = `
-      <div class="meal-head"><span class="meal-title">Beliscos / itens extras</span><span class="meal-kcal">${extrasTotal(extras)} kcal</span></div>
-      <div class="chips">${FOOD_DB.map((f,idx)=>`<button class="chip" data-idx="${idx}">${f.n} · ${f.u} · ${f.k}kcal</button>`).join('')}</div>
-      <div class="item-list">${extras.items.map((it,i)=>`
-        <div class="item-row">
-          <span class="item-name">${it.n}${it.qty>1 ? ' ×'+it.qty : ''}</span>
-          <span class="item-kcal">${it.k*it.qty} kcal</span>
-          <button class="item-x" data-i="${i}" title="remover">×</button>
-        </div>`).join('') || '<p class="hint" style="margin:0;">Nada fora do plano hoje.</p>'}
-      </div>
-      <div class="custom-add-v2">
-        <input type="text" class="iname-full" id="fExtraNome" list="foodSuggestions" placeholder="outro alimento...">
-        <div class="custom-add-row">
-          <input type="number" class="ikcal" id="fExtraQtd" placeholder="qtd (g)">
-          <input type="number" class="ikcal" id="fExtraKcal" placeholder="kcal">
-          <button class="btnAddCustom">adicionar</button>
-        </div>
-      </div>
-      <p class="hint" style="margin-top:6px;">Se o alimento já existe no plano, só a quantidade (g) já calcula a kcal sozinha.</p>
-      <div class="obs-field"><input type="text" class="iobs" placeholder="observação (opcional)" value="${extras.obs||''}"></div>
-    `;
-    wrap.appendChild(card);
+  // Editor de quantidade — abre um mini-painel sobre o item
+  function openQtyEditor(mealKey, idx, today, dateForSave){
+    const e = today.meals[mealKey][idx];
+    const f = FOOD_BY_NAME[e.n];
+    if (!f) return;
 
-    card.querySelectorAll('.chip').forEach(chip => {
-      chip.onclick = async () => {
-        const f = FOOD_DB[parseInt(chip.dataset.idx)];
-        const existing = extras.items.find(it => it.n === f.n && it.k === f.k);
-        if (existing) existing.qty += 1;
-        else extras.items.push({ n: f.n, k: f.k, qty: 1 });
-        await saveDay(dateForSave);
-        toast();
-        render();
-      };
-    });
-    card.querySelectorAll('.item-x').forEach(btn => {
-      btn.onclick = async () => {
-        extras.items.splice(parseInt(btn.dataset.i), 1);
-        await saveDay(dateForSave);
-        toast();
-        render();
-      };
-    });
-    const nomeEl = document.getElementById('fExtraNome');
-    const qtdEl = document.getElementById('fExtraQtd');
-    const kcalEl = document.getElementById('fExtraKcal');
-    function recomputeExtraKcal(){
-      const density = FOOD_DENSITY_100[nomeEl.value];
-      if (density !== undefined) {
-        qtdEl.style.display = '';
-        if (!qtdEl.value) qtdEl.value = FOOD_DEFAULT_QTY[nomeEl.value] || 100;
-        const qtd = parseFloat(qtdEl.value) || 0;
-        kcalEl.value = Math.round(density * qtd / 100);
-      } else {
-        const fixed = FOOD_FIXED_KCAL[nomeEl.value];
-        if (fixed !== undefined) {
-          qtdEl.style.display = 'none';
-          kcalEl.value = fixed;
-        } else {
-          qtdEl.style.display = '';
-        }
-      }
+    const overlay = document.createElement('div');
+    overlay.className = 'qty-overlay';
+    overlay.innerHTML = `
+      <div class="qty-panel">
+        <p class="qty-title">${e.n}</p>
+        <p class="qty-sub">${f.k100} kcal · ${f.p}g proteína <span class="fr-per">por 100g</span></p>
+
+        <div class="qty-row">
+          <input type="number" step="any" id="qtyValue" value="${e.qty}">
+          <select id="qtyMode">
+            <option value="un" ${e.mode==='un'?'selected':''}>${f.unit}(s)</option>
+            <option value="g" ${e.mode==='g'?'selected':''}>gramas</option>
+          </select>
+        </div>
+        <p class="qty-hint" id="qtyPreview"></p>
+
+        <div class="qty-actions">
+          <button class="qty-cancel">cancelar</button>
+          <button class="qty-save">salvar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const valEl = overlay.querySelector('#qtyValue');
+    const modeEl = overlay.querySelector('#qtyMode');
+    const prevEl = overlay.querySelector('#qtyPreview');
+
+    function updatePreview(){
+      const tmp = { n: e.n, qty: parseFloat(valEl.value)||0, mode: modeEl.value };
+      const g = Math.round(toGrams(tmp));
+      prevEl.innerHTML = `<strong>${g}g</strong> na balança → <strong>${entryKcal(tmp)} kcal</strong> · <strong>${entryProt(tmp).toFixed(1)}g</strong> de proteína`;
     }
-    nomeEl.addEventListener('input', recomputeExtraKcal);
-    qtdEl.addEventListener('input', recomputeExtraKcal);
-    card.querySelector('.btnAddCustom').onclick = async () => {
-      const name = nomeEl.value.trim();
-      const kcal = parseInt(kcalEl.value);
-      if (!name || !kcal) return;
-      extras.items.push({ n: name, k: kcal, qty: 1 });
+    updatePreview();
+    valEl.oninput = updatePreview;
+    modeEl.onchange = () => {
+      // ao trocar de modo, converte o valor pra manter a mesma quantidade real
+      const cur = { n: e.n, qty: parseFloat(valEl.value)||0, mode: modeEl.value==='g' ? 'un' : 'g' };
+      const grams = toGrams(cur);
+      valEl.value = modeEl.value === 'g' ? Math.round(grams) : +(grams / f.unitG).toFixed(1);
+      updatePreview();
+    };
+
+    overlay.querySelector('.qty-cancel').onclick = () => overlay.remove();
+    overlay.onclick = (ev) => { if (ev.target === overlay) overlay.remove(); };
+    overlay.querySelector('.qty-save').onclick = async () => {
+      e.qty = parseFloat(valEl.value) || 0;
+      e.mode = modeEl.value;
+      overlay.remove();
       await saveDay(dateForSave);
       toast();
       render();
-    };
-    card.querySelector('.iobs').onchange = async (e) => {
-      extras.obs = e.target.value;
-      await saveDay(dateForSave);
-      toast();
     };
   }
 

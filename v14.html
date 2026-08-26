@@ -754,7 +754,12 @@
     // ── Bebidas
     {n:'Suco integral de uva', k100:61, p:0.4, unit:'copo', unitG:200},
     {n:'Suco de laranja natural', k100:45, p:0.7, unit:'copo', unitG:200},
+    {n:'Café preto coado (sem açúcar)', k100:2, p:0.1, unit:'xícara', unitG:150},
+    {n:'Café expresso (sem açúcar)', k100:9, p:0.1, unit:'xícara', unitG:50},
+    {n:'Café preto c/ 1 colher de açúcar', k100:15, p:0.1, unit:'xícara', unitG:150},
     {n:'Café com leite', k100:20, p:1.5, unit:'xícara', unitG:200},
+    {n:'Cappuccino', k100:60, p:2.8, unit:'xícara', unitG:200},
+    {n:'Chá (sem açúcar)', k100:1, p:0, unit:'xícara', unitG:200},
     {n:'Refrigerante comum', k100:43, p:0, unit:'lata', unitG:350},
     {n:'Refrigerante zero', k100:0.5, p:0, unit:'lata', unitG:350},
     {n:'Cerveja', k100:43, p:0.5, unit:'lata', unitG:350},
@@ -1784,8 +1789,8 @@
 
   // Sugestões iniciais por refeição (quando a busca está vazia) — o que faz sentido em cada momento do dia
   const MEAL_SUGGESTIONS = {
-    pre: ['Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café com leite','Aveia em flocos'],
-    cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão de forma integral','Pão integral com mel','Iogurte natural','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
+    pre: ['Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café preto coado (sem açúcar)','Café expresso (sem açúcar)','Aveia em flocos'],
+    cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão de forma integral','Pão integral com mel','Iogurte natural','Café preto coado (sem açúcar)','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
     pos: ['Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim','Iogurte grego natural'],
     almoco: ['Frango desfiado','Frango grelhado','Carne moída (patinho)','Arroz branco cozido','Feijão cozido','Salada verde','Batata doce cozida','Abobrinha refogada','Cenoura cozida','Brócolis cozido','Abóbora/jerimum cozida','Azeite extra virgem'],
     lanche: ['Iogurte natural','Granola','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim','Queijo minas frescal','Whey Protein'],

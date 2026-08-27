@@ -701,6 +701,7 @@
     {n:'Granola', k100:490, p:9, unit:'colher de sopa', unitG:10},
     {n:'Pão de forma integral', k100:253, p:9, unit:'fatia', unitG:25},
     {n:'Pão integral com mel', k100:265, p:7.1, unit:'fatia', unitG:32},
+    {n:'Pão integral c/ pasta de amendoim', k100:388, p:14.6, unit:'fatia', unitG:40},
     {n:'Pão de forma tradicional', k100:253, p:8, unit:'fatia', unitG:25},
     {n:'Pão francês', k100:300, p:8, unit:'unidade', unitG:50},
     {n:'Pão de queijo', k100:290, p:5, unit:'unidade média', unitG:35},
@@ -725,7 +726,7 @@
     // ── Gorduras e oleaginosas
     {n:'Azeite extra virgem', k100:884, p:0, unit:'colher de sopa', unitG:8},
     {n:'Manteiga', k100:717, p:0.9, unit:'colher de chá', unitG:5},
-    {n:'Pasta de amendoim', k100:588, p:25, unit:'colher de sopa', unitG:15},
+    {n:'Pasta de amendoim (integral, s/ açúcar)', k100:614, p:24, unit:'colher de sopa', unitG:15},
     {n:'Castanhas mistas', k100:600, p:15, unit:'punhado', unitG:30},
     {n:'Castanha do pará', k100:643, p:14, unit:'unidade', unitG:5},
     {n:'Amendoim torrado', k100:567, p:26, unit:'punhado', unitG:30},
@@ -784,7 +785,6 @@
     {n:'Sanduíche natural', k100:200, p:10, unit:'unidade', unitG:125},
     {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', k100:70, p:6, unit:'shake', unitG:490},
     {n:'Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)', k100:112, p:9.2, unit:'shake', unitG:385},
-    {n:'Pasta de amendoim sem açúcar', k100:588, p:25, unit:'colher de sopa', unitG:15},
     {n:'Creatina', k100:0, p:0, unit:'dose', unitG:5}
   ];
 
@@ -1793,10 +1793,10 @@
   // Sugestões iniciais por refeição (quando a busca está vazia) — o que faz sentido em cada momento do dia
   const MEAL_SUGGESTIONS = {
     pre: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café preto coado (sem açúcar)','Café expresso (sem açúcar)','Aveia em flocos'],
-    cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão de forma integral','Pão integral com mel','Iogurte natural','Café preto coado (sem açúcar)','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
-    pos: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim','Iogurte grego natural'],
+    cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão integral c/ pasta de amendoim','Pão de forma integral','Pão integral com mel','Iogurte natural','Café preto coado (sem açúcar)','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
+    pos: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim (integral, s/ açúcar)','Iogurte grego natural'],
     almoco: ['Frango desfiado','Frango grelhado','Carne moída (patinho)','Arroz branco cozido','Feijão cozido','Salada verde','Batata doce cozida','Abobrinha refogada','Cenoura cozida','Brócolis cozido','Abóbora/jerimum cozida','Azeite extra virgem'],
-    lanche: ['Iogurte natural','Granola','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim','Queijo minas frescal','Whey Protein'],
+    lanche: ['Iogurte natural','Granola','Pão integral c/ pasta de amendoim','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim (integral, s/ açúcar)','Queijo minas frescal','Whey Protein'],
     jantar: ['Carne moída (patinho)','Frango desfiado','Macarrão integral cozido','Arroz branco cozido','Salada verde','Legumes cozidos (mix)','Abobrinha refogada','Batata doce cozida','Batata inglesa cozida','Tilápia grelhada','Sopa de legumes','Ovo cozido']
   };
   function defaultSuggestions(mealKey){

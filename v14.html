@@ -782,7 +782,10 @@
     {n:'Coxinha', k100:250, p:8, unit:'unidade', unitG:80},
     {n:'Pastel', k100:300, p:7, unit:'unidade', unitG:100},
     {n:'Sanduíche natural', k100:200, p:10, unit:'unidade', unitG:125},
-    {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', k100:70, p:6, unit:'shake', unitG:490}
+    {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', k100:70, p:6, unit:'shake', unitG:490},
+    {n:'Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)', k100:112, p:9.2, unit:'shake', unitG:385},
+    {n:'Pasta de amendoim sem açúcar', k100:588, p:25, unit:'colher de sopa', unitG:15},
+    {n:'Creatina', k100:0, p:0, unit:'dose', unitG:5}
   ];
 
   // Refeições do dia (só a estrutura — os itens começam vazios e você adiciona o que comeu)
@@ -1789,9 +1792,9 @@
 
   // Sugestões iniciais por refeição (quando a busca está vazia) — o que faz sentido em cada momento do dia
   const MEAL_SUGGESTIONS = {
-    pre: ['Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café preto coado (sem açúcar)','Café expresso (sem açúcar)','Aveia em flocos'],
+    pre: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Shake pós-treino (whey+açaí+banana+morango+leite)','Whey Protein','Banana prata','Pão integral com mel','Café preto coado (sem açúcar)','Café expresso (sem açúcar)','Aveia em flocos'],
     cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão de forma integral','Pão integral com mel','Iogurte natural','Café preto coado (sem açúcar)','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
-    pos: ['Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim','Iogurte grego natural'],
+    pos: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim','Iogurte grego natural'],
     almoco: ['Frango desfiado','Frango grelhado','Carne moída (patinho)','Arroz branco cozido','Feijão cozido','Salada verde','Batata doce cozida','Abobrinha refogada','Cenoura cozida','Brócolis cozido','Abóbora/jerimum cozida','Azeite extra virgem'],
     lanche: ['Iogurte natural','Granola','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim','Queijo minas frescal','Whey Protein'],
     jantar: ['Carne moída (patinho)','Frango desfiado','Macarrão integral cozido','Arroz branco cozido','Salada verde','Legumes cozidos (mix)','Abobrinha refogada','Batata doce cozida','Batata inglesa cozida','Tilápia grelhada','Sopa de legumes','Ovo cozido']

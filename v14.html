@@ -710,7 +710,7 @@
     // ── Frutas
     {n:'Banana prata', k100:98, p:1.3, unit:'unidade', unitG:85},
     {n:'Banana nanica', k100:92, p:1.4, unit:'unidade', unitG:120},
-    {n:'Maçã fuji', k100:56, p:0.3, unit:'unidade', unitG:130},
+    {n:'Maçã', k100:56, p:0.3, unit:'unidade', unitG:130},
     {n:'Uva Rubi/Itália', k100:53, p:0.7, unit:'unidade', unitG:5},
     {n:'Morango', k100:32, p:0.7, unit:'unidade', unitG:15},
     {n:'Mamão', k100:40, p:0.5, unit:'fatia', unitG:120},
@@ -722,6 +722,15 @@
     {n:'Laranja', k100:45, p:0.9, unit:'unidade', unitG:130},
     {n:'Kiwi', k100:51, p:1.1, unit:'unidade', unitG:75},
     {n:'Abacate', k100:160, p:2, unit:'porção', unitG:100},
+    {n:'Tangerina/mexerica', k100:44, p:0.7, unit:'unidade', unitG:120},
+    {n:'Goiaba', k100:54, p:1.1, unit:'unidade', unitG:150},
+    {n:'Açaí (polpa pura)', k100:60, p:0.8, unit:'porção', unitG:100},
+    {n:'Ameixa', k100:53, p:0.8, unit:'unidade', unitG:70},
+    {n:'Pêssego', k100:39, p:0.9, unit:'unidade', unitG:100},
+    {n:'Caqui', k100:71, p:0.4, unit:'unidade', unitG:150},
+    {n:'Coco fresco', k100:406, p:3.7, unit:'pedaço', unitG:30},
+    {n:'Limão', k100:29, p:1.1, unit:'unidade', unitG:60},
+    {n:'Salada de frutas', k100:50, p:0.7, unit:'porção', unitG:200},
 
     // ── Gorduras e oleaginosas
     {n:'Azeite extra virgem', k100:884, p:0, unit:'colher de sopa', unitG:8},
@@ -783,6 +792,21 @@
     {n:'Coxinha', k100:250, p:8, unit:'unidade', unitG:80},
     {n:'Pastel', k100:300, p:7, unit:'unidade', unitG:100},
     {n:'Sanduíche natural', k100:200, p:10, unit:'unidade', unitG:125},
+    {n:'Pão c/ carne de panela desfiada', k100:230, p:14, unit:'unidade', unitG:180},
+    {n:'Carne de panela desfiada', k100:190, p:26, unit:'porção', unitG:100},
+    {n:'Bowl de salada c/ castanhas', k100:120, p:4, unit:'bowl', unitG:250},
+    {n:'Salada com frango grelhado', k100:110, p:12, unit:'bowl', unitG:300},
+    {n:'Prato feito (arroz, feijão, carne, salada)', k100:145, p:9, unit:'prato', unitG:450},
+    {n:'Wrap/tortilla c/ frango', k100:210, p:13, unit:'unidade', unitG:200},
+    {n:'Sopa/caldo (restaurante)', k100:60, p:3, unit:'prato', unitG:300},
+    {n:'Estrogonofe de frango c/ arroz', k100:170, p:10, unit:'prato', unitG:350},
+    {n:'Feijoada', k100:180, p:12, unit:'prato', unitG:300},
+    {n:'Lasanha', k100:165, p:9, unit:'porção', unitG:250},
+    {n:'Risoto', k100:150, p:5, unit:'prato', unitG:300},
+    {n:'Escondidinho de carne', k100:150, p:9, unit:'porção', unitG:280},
+    {n:'Tapioca c/ recheio (queijo/frango)', k100:190, p:8, unit:'unidade', unitG:150},
+    {n:'Açaí na tigela (c/ granola e banana)', k100:130, p:2, unit:'tigela', unitG:300},
+    {n:'Suco de laranja (copo grande)', k100:45, p:0.7, unit:'copo grande', unitG:400},
     {n:'Shake pós-treino (whey+açaí+banana+morango+leite)', k100:70, p:6, unit:'shake', unitG:490},
     {n:'Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)', k100:112, p:9.2, unit:'shake', unitG:385},
     {n:'Creatina', k100:0, p:0, unit:'dose', unitG:5}
@@ -1796,7 +1820,7 @@
     cafe: ['Ovo mexido/frito (pouco óleo)','Ovo cozido','Pão integral c/ pasta de amendoim','Pão de forma integral','Pão integral com mel','Iogurte natural','Café preto coado (sem açúcar)','Café com leite','Tapioca (goma hidratada)','Mamão','Banana prata','Queijo minas frescal'],
     pos: ['Shake proteico (whey+morango+banana+pasta amendoim+creatina+leite)','Whey Protein','Shake pós-treino (whey+açaí+banana+morango+leite)','Banana prata','Leite sem lactose','Pasta de amendoim (integral, s/ açúcar)','Iogurte grego natural'],
     almoco: ['Frango desfiado','Frango grelhado','Carne moída (patinho)','Arroz branco cozido','Feijão cozido','Salada verde','Batata doce cozida','Abobrinha refogada','Cenoura cozida','Brócolis cozido','Abóbora/jerimum cozida','Azeite extra virgem'],
-    lanche: ['Iogurte natural','Granola','Pão integral c/ pasta de amendoim','Pão integral com mel','Maçã fuji','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim (integral, s/ açúcar)','Queijo minas frescal','Whey Protein'],
+    lanche: ['Iogurte natural','Granola','Pão integral c/ pasta de amendoim','Pão integral com mel','Maçã','Morango','Uva Rubi/Itália','Castanhas mistas','Pasta de amendoim (integral, s/ açúcar)','Queijo minas frescal','Whey Protein'],
     jantar: ['Carne moída (patinho)','Frango desfiado','Macarrão integral cozido','Arroz branco cozido','Salada verde','Legumes cozidos (mix)','Abobrinha refogada','Batata doce cozida','Batata inglesa cozida','Tilápia grelhada','Sopa de legumes','Ovo cozido']
   };
   function defaultSuggestions(mealKey){
